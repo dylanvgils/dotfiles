@@ -9,6 +9,8 @@ set background=dark
 set nobackup
 set nowritebackup
 
+packadd! onedark.vim
+
 " Better display for messages
 set cmdheight=2
 
@@ -133,7 +135,7 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
 "Vim lightline plugin config"
 let g:lightline = {
-      \ 'colorscheme': 'onehalfdark',
+      \ 'colorscheme': 'onedark',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
@@ -161,5 +163,5 @@ let g:go_highlight_extra_types = 1
 let g:go_highlight_generate_tags = 1
 
 "Set vim color theme"
-colorscheme onehalfdark
+colorscheme onedark
 syntax on
