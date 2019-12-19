@@ -5,6 +5,13 @@
 .viminfo
 .vim/.netrwhist
 
+# Ingore bash config files, because we are using zsh anyway
+.bash
+.bashrc
+.bash_history
+.bash_logout
+.profile
+
 # Ignore specific program related folders we don't want in git
 go/
 .vscode-server/
