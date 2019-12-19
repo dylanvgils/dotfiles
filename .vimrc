@@ -149,6 +149,9 @@ if (has("termguicolors"))
   set termguicolors
 endif
 
+"ondark.vim"
+let g:onedark_termcolors=256
+
 "vim-go"
 let g:go_fmt_command = "goimports"
 let g:go_autodetect_gopath = 1
