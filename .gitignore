@@ -1,0 +1,29 @@
+# Ignore the system git configuration file
+.gitconfig
+
+# Ignore vim cache files
+.viminfo
+.vim/.netrwhist
+
+# Ignore specific program related folders we don't want in git
+go/
+.vscode-server/
+
+# Ignore folders where ssh keys are located, we don't want this to be pushed to a remote repository
+.ssh/
+
+# Ignore user-specific data (https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
+.cache/
+.config/
+.local/
+
+# Ignore shell cache files
+.bash_history
+.zsh_history
+.zcompdump*
+
+# Ignore NVM (node version manager) installation
+.nvm/
+
+# Ignore dotfiles git folder
+.dotfiles.git/
