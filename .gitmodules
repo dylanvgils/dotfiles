@@ -17,12 +17,6 @@
 [submodule ".vim/pack/plugins/opt/onedark.vim"]
 	path = .vim/pack/plugins/opt/onedark.vim
 	url = git@github.com:joshdick/onedark.vim.git
-[submodule ".tmux/plugins/tmux-sensible"]
-	path = .tmux/plugins/tmux-sensible
-	url = git@github.com:tmux-plugins/tmux-sensible.git
-[submodule ".tmux/plugins/tmux-cpu"]
-	path = .tmux/plugins/tmux-cpu
-	url = git@github.com:tmux-plugins/tmux-cpu.git
 [submodule ".tmux/plugins/tpm"]
 	path = .tmux/plugins/tpm
 	url = git@github.com:tmux-plugins/tpm.git
