@@ -4,10 +4,6 @@
 .tmux/plugins/
 !.tmux/plugins/tpm
 
-# Ignore oh-my-zsh folder except custom plugins
-.oh-my-zsh/
-!.oh-my-zsh/custom/
-
 # Ignore the system git configuration file
 .gitconfig
 
