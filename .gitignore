@@ -4,6 +4,11 @@
 .tmux/plugins/
 !.tmux/plugins/tpm
 
+# Ignore the oh-my-ssh-folder, but allow the custom directory
+!.oh-my-ssh/
+.oh-my-ssh/*
+!.oh-my-ssh/custom
+
 # Ignore the system git configuration file
 .gitconfig
 
@@ -23,7 +28,9 @@ go/
 .vscode-server/
 
 # Ignore folders where ssh keys are located, we don't want this to be pushed to a remote repository
-.ssh/
+!./ssh
+.ssh/*
+!.ssh/config
 
 # Ignore user-specific data (https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
 .cache/
