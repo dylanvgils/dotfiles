@@ -1,3 +1,4 @@
+# Ignore some files we are not interested in
 .sudo_as_admin_successful
 
 # Ignore tmux plugin folder except TPM
@@ -8,6 +9,12 @@
 !.oh-my-zsh/
 .oh-my-zsh/*
 !.oh-my-zsh/custom/**/*
+
+# Ingore node and node version management directories
+.n/
+.npm/
+.npm-packages/
+.npmrc
 
 # Ignore the system git configuration file
 .gitconfig
