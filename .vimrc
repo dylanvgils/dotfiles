@@ -1,4 +1,4 @@
-"Vim options"
+"----------- Vim options ----------- 
 set hidden
 set laststatus=2
 set number
@@ -8,8 +8,6 @@ set cursorline
 set background=dark
 set nobackup
 set nowritebackup
-
-packadd! onedark.vim
 
 " Better display for messages
 set cmdheight=2
@@ -23,6 +21,10 @@ set shortmess+=c
 " always show signcolumns
 set signcolumn=yes
 
+"----------- Packages ----------- 
+packadd! onedark.vim
+
+"----------- COC ----------- 
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
 inoremap <silent><expr> <TAB>
@@ -133,26 +135,8 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
-"Vim lightline plugin config"
-let g:lightline = {
-      \ 'colorscheme': 'onedark',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'fugitive#head'
-      \ },
-      \ }
 
-if (has("termguicolors"))
-  set termguicolors
-endif
-
-"ondark.vim"
-let g:onedark_termcolors=256
-
-"vim-go"
+"----------- vim-go ----------- 
 let g:go_fmt_command = "goimports"
 let g:go_autodetect_gopath = 1
 let g:go_list_type = "quickfix"
@@ -165,6 +149,24 @@ let g:go_highlight_function_calls = 1
 let g:go_highlight_extra_types = 1
 let g:go_highlight_generate_tags = 1
 
-"Set vim color theme"
+"----------- Lightline ----------- 
+let g:lightline = {
+      \ 'colorscheme': 'onedark',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'fugitive#head'
+      \ },
+      \ }
+
+"----------- Color theme and syntax ----------- 
+let g:onedark_termcolors=256
+
+if (has("termguicolors"))
+  set termguicolors
+endif
+
 colorscheme onedark
 syntax on
