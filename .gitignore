@@ -5,16 +5,14 @@
 .tmux/plugins/
 !.tmux/plugins/tpm
 
-# Ignore the oh-my-zsh folder, but allow the custom directory
+# Ignore the oh-my-zsh folder
 !.oh-my-zsh/
-.oh-my-zsh/*
-!.oh-my-zsh/custom/**/*
 
 # Ingore node and node version management directories
 .n/
+.nvm/
 .npm/
 .npm-packages/
-.npmrc
 
 # Ignore the system git configuration file
 .gitconfig
@@ -48,9 +46,6 @@ go/
 .bash_history
 .zsh_history
 .zcompdump*
-
-# Ignore NVM (node version manager) installation
-.nvm/
 
 # Ignore dotfiles git folder
 .dotfiles.git/
