@@ -1,13 +1,3 @@
-# export Go path and Bin
-export GOPATH=$HOME/go
-
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
-
-# Path to your oh-my-zsh installation.
-export ZSH="/home/dylan/.oh-my-zsh"
-
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -74,33 +64,10 @@ ZSH_THEME="dracula"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git)
 plugins+=(zsh-autosuggestions)
-plugins+=(zsh-nvm)
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
-# Start the ssh-agent or load existing configuration
-SSH_ENV="$HOME/.ssh/environment"
-SSH_KEY_LIFETIME='4h'
-
-function start_agent {
-     echo "Initialising new SSH agent..."
-     /usr/bin/ssh-agent -t ${SSH_KEY_LIFETIME} | sed 's/^echo/#echo/' > "${SSH_ENV}"
-     chmod 600 "${SSH_ENV}"
-     . "${SSH_ENV}" > /dev/null
-}
-
-# Source SSH settings, if applicable
-if [ -f "${SSH_ENV}" ]; then
-     . "${SSH_ENV}" > /dev/null
-     #ps ${SSH_AGENT_PID} doesn't work under cywgin
-     ps -ef | grep ${SSH_AGENT_PID} | grep "ssh-agent -t ${SSH_KEY_LIFETIME}$" > /dev/null || {
-         start_agent;
-     }
-else
-     start_agent;
-fi
-
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
@@ -124,4 +91,7 @@ fi
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"
+
+# Source
+source $HOME/.functions
+source $HOME/.aliases

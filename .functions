@@ -1,0 +1,21 @@
+# --- Functions ---
+
+# Start ssh agent and source environment
+function start_ssh_agent {
+     echo "Initialising new SSH agent..."
+     /usr/bin/ssh-agent -t ${SSH_KEY_LIFETIME} | sed 's/^echo/#echo/' > "${SSH_ENV}"
+     chmod 600 "${SSH_ENV}"
+     source "${SSH_ENV}" > /dev/null
+}
+
+# Auto execute on source
+# Source SSH settings, if applicable
+if [ -f "${SSH_ENV}" ]; then
+     source "${SSH_ENV}" > /dev/null
+     #ps ${SSH_AGENT_PID} doesn't work under cywgin
+     ps -ef | grep ${SSH_AGENT_PID} | grep "ssh-agent -t ${SSH_KEY_LIFETIME}$" > /dev/null || {
+         start_ssh_agent;
+     }
+else
+     start_ssh_agent;
+fi
