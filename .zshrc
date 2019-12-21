@@ -65,8 +65,6 @@ ZSH_THEME="dracula"
 plugins=(git)
 plugins+=(zsh-autosuggestions)
 
-source $ZSH/oh-my-zsh.sh
-
 # User configuration
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -93,5 +91,6 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # Source
+source $ZSH/oh-my-zsh.sh
 source $HOME/.functions
 source $HOME/.aliases
