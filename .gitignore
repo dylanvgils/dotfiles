@@ -6,7 +6,7 @@
 !.tmux/plugins/tpm
 
 # Ignore the oh-my-zsh folder
-!.oh-my-zsh/
+.oh-my-zsh/
 
 # Ingore node and node version management directories
 .n/
