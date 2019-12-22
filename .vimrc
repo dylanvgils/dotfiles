@@ -1,13 +1,17 @@
+"
 "----------- Vim options ----------- 
+"
 set hidden
 set laststatus=2
 set number
-set rnu
-set t_Co=256
+set relativenumber
 set cursorline
-set background=dark
 set nobackup
 set nowritebackup
+
+" Show indent guides
+set list
+set listchars=tab:\|\ ,nbsp:·,trail:·
 
 " Better display for messages
 set cmdheight=2
@@ -24,7 +28,9 @@ set signcolumn=yes
 "----------- Packages ----------- 
 packadd! onedark.vim
 
+"
 "----------- COC ----------- 
+"
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
 inoremap <silent><expr> <TAB>
@@ -135,8 +141,9 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
-
+"
 "----------- vim-go ----------- 
+"
 let g:go_fmt_command = "goimports"
 let g:go_autodetect_gopath = 1
 let g:go_list_type = "quickfix"
@@ -149,7 +156,9 @@ let g:go_highlight_function_calls = 1
 let g:go_highlight_extra_types = 1
 let g:go_highlight_generate_tags = 1
 
+"
 "----------- Lightline ----------- 
+"
 let g:lightline = {
       \ 'colorscheme': 'onedark',
       \ 'active': {
@@ -161,7 +170,9 @@ let g:lightline = {
       \ },
       \ }
 
+"
 "----------- Color theme and syntax ----------- 
+"
 let g:onedark_termcolors=256
 
 if (has("termguicolors"))
@@ -169,4 +180,5 @@ if (has("termguicolors"))
 endif
 
 colorscheme onedark
+set background=dark
 syntax on
