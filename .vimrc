@@ -12,6 +12,8 @@ set nowritebackup
 " Show indent guides
 set list
 set listchars=tab:\|\ ,nbsp:·,trail:·
+set tabstop=4
+set expandtab
 
 " Better display for messages
 set cmdheight=2
