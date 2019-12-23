@@ -120,3 +120,4 @@ dotfiles commit -am "Updated plugins."
 
 - [Manage Dotfiles With a Bare Git Repository](https://harfangk.github.io/2016/09/18/manage-dotfiles-with-a-git-bare-repository.html)
 - [Using git-submodules to version-control Vim plugins](https://gist.github.com/manasthakur/d4dc9a610884c60d944a4dd97f0b3560)
+- [Using ssh-agent with ssh](http://mah.everybody.org/docs/ssh)
