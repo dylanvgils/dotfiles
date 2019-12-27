@@ -1,51 +1,34 @@
-# Ignore some files we are not interested in
-.sudo_as_admin_successful
+# Ignore everything
+/*
 
-# Ignore tmux plugin folder except TPM
-.tmux/plugins/
-!.tmux/plugins/tpm
+# Allow configuration files
+!.gitignore
+!.gitmodules
 
-# Ignore the oh-my-zsh folder
-.oh-my-zsh/
+# Allow readme
+!README.md
 
-# Ingore node and node version management directories
-.n/
-.nvm/
-.npm/
-.npm-packages/
-
-# Ignore the system git configuration file
-.gitconfig
-
-# Ignore vim cache files
-.viminfo
-.vim/.netrwhist
-
-# Ingore bash config files, because we are using zsh anyway
-.bash
-.bashrc
-.bash_history
-.bash_logout
-.profile
-
-# Ignore specific program related folders we don't want in git
-go/
-.vscode-server/
-
-# Ignore folders where ssh keys are located, we don't want this to be pushed to a remote repository
-!./ssh
-.ssh/*
+# Allow ssh configuration
 !.ssh/config
 
-# Ignore user-specific data (https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
-.cache/
-.config/
-.local/
+# Allow vim configuration files
+.vim/.netrwhist
+!.vimrc
+!.vim/
 
-# Ignore shell cache files
-.bash_history
-.zsh_history
-.zcompdump*
+# Allow zsh configuration files
+!.aliases
+!.functions
+!.zshenv
+!.zshrc
 
-# Ignore dotfiles git folder
-.dotfiles.git/
+# Allow oh-my-zsh plugin directory
+!.oh-my-zsh/custom/
+!.oh-my-zsh/custom/**
+
+# Allow tmux configuration files
+!.tmux.conf
+!.tmux/plugins/tpm
+
+# Allow other configuration files
+!.npmrc

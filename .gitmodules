@@ -26,3 +26,6 @@
 [submodule ".vim/pack/plugins/start/vim-fugitive"]
 	path = .vim/pack/plugins/start/vim-fugitive
 	url = git@github.com:tpope/vim-fugitive.git
+[submodule ".oh-my-zsh/custom/themes/dracula"]
+	path = .oh-my-zsh/custom/themes/dracula
+	url = git@github.com:dracula/zsh.git
