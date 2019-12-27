@@ -12,8 +12,12 @@ set nowritebackup
 " Show indent guides
 set list
 set listchars=tab:\|\ ,nbsp:·,trail:·
-set tabstop=4
+
+" Indent settings
+set shiftwidth=4
+set softtabstop=4
 set expandtab
+set autoindent
 
 " Better display for messages
 set cmdheight=2
@@ -27,8 +31,18 @@ set shortmess+=c
 " always show signcolumns
 set signcolumn=yes
 
+"
 "----------- Packages ----------- 
+"
 packadd! onedark.vim
+
+"
+"----------- Auto CMD -----------
+"
+if has("autocmd")
+    " File type detection. Indent based on filetype. Recommended.
+    filetype plugin indent on
+endif
 
 "
 "----------- COC ----------- 
