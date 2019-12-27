@@ -63,6 +63,7 @@ echo 'alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$H
 source ~/.zshrc
 git clone --bare git@github.com:username/repo.git $HOME/.dotfiles.git
 dotfiles checkout
+dotfiles submodule update --init
 ```
 
 1) Add the `dotfiles` alias to your shell configuration.
