@@ -17,5 +17,6 @@ export SSH_ENV="$HOME/.ssh/environment"
 export SSH_KEY_LIFETIME='4h'
 
 # Path
+export PATH=$N_PREFIX/bin:$PATH
 export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 export PATH=$PATH:$NPM_PACKAGES/share/man
