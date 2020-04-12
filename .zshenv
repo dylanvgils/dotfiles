@@ -1,5 +1,10 @@
 skip_global_compinit=1
 
+# Helper function for including optional files
+include () {
+    [[ -f "$1" ]] && source "$1"
+}
+
 # --- Exports ---
 
 # Path to your oh-my-zsh installation.
@@ -20,3 +25,7 @@ export SSH_KEY_LIFETIME='4h'
 export PATH=$N_PREFIX/bin:$PATH
 export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 export PATH=$PATH:$NPM_PACKAGES/share/man
+export PATH=$PATH:$NPM_PACKAGES/bin
+
+# Include optional environment file
+include .zshenv.local
