@@ -28,4 +28,4 @@ export PATH=$PATH:$NPM_PACKAGES/share/man
 export PATH=$PATH:$NPM_PACKAGES/bin
 
 # Include optional environment file
-include .zshenv.local
+include ~/.zshenv.local

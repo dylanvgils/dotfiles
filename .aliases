@@ -4,4 +4,4 @@
 alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"
 
 # Source optional aliases 
-include .aliases.local
+include ~/.aliases.local
