@@ -61,7 +61,7 @@ This first chapter of this readme described how the dotfiles can be setup on a s
 ```bash
 echo 'alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"' >> $HOME/.zshrc
 source ~/.zshrc
-git clone --bare git@github.com:username/repo.git $HOME/.dotfiles.git
+git clone --bare git@github.com/dylanvgils/dotfiles.git $HOME/.dotfiles.git
 dotfiles checkout
 dotfiles submodule update --init
 ```
