@@ -44,7 +44,7 @@ source ~/.bashrc
 The **fourth step** is setting the remote of the git repository:
 
 ```bash
-dotfiles remote add origin git@github.com:username/repo.git
+dotfiles remote add origin git@github.com/dylanvgils/dotfiles.git
 ```
 
 **Optionally** you can set the `showUntrackedFiles` to `no` to hide the untracked files when calling `git status`.
@@ -107,7 +107,7 @@ To update all submodules:
 
 ```bash
 cd ~/
-dotfiles submodule foreach git pull origin master
+dotfiles submodule update --recursive --remote
 ```
 
 Updating submodules will create uncommitted changes in the dotfiles repository. So when submodules are updated, you need to commit the dotfiles repository as well:

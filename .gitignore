@@ -5,8 +5,9 @@
 !.gitignore
 !.gitmodules
 
-# Allow readme
+# Allow readme and docs
 !README.md
+!.docs/
 
 # Allow ssh configuration
 !.ssh/config

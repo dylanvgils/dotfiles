@@ -1,15 +1,19 @@
 [submodule ".vim/pack/default/start/vim-polyglot"]
 	path = .vim/pack/default/start/vim-polyglot
 	url = https://github.com/sheerun/vim-polyglot.git
+	branch = master
 [submodule ".vim/pack/plugins/start/editorconfig-vim"]
 	path = .vim/pack/plugins/start/editorconfig-vim
 	url = git@github.com:editorconfig/editorconfig-vim.git
+	branch = master
 [submodule ".vim/pack/plugins/start/lightline"]
 	path = .vim/pack/plugins/start/lightline
 	url = git@github.com:itchyny/lightline.vim.git
+	branch = master
 [submodule ".vim/pack/plugins/start/vim-go"]
 	path = .vim/pack/plugins/start/vim-go
 	url = git@github.com:fatih/vim-go.git
+	branch = master
 [submodule ".vim/pack/plugins/start/coc.nvim"]
 	path = .vim/pack/plugins/start/coc.nvim
 	url = git@github.com:neoclide/coc.nvim.git
@@ -17,15 +21,20 @@
 [submodule ".vim/pack/plugins/opt/onedark.vim"]
 	path = .vim/pack/plugins/opt/onedark.vim
 	url = git@github.com:joshdick/onedark.vim.git
+	branch = master
 [submodule ".tmux/plugins/tpm"]
 	path = .tmux/plugins/tpm
 	url = git@github.com:tmux-plugins/tpm.git
+	branch = master
 [submodule ".oh-my-zsh/custom/plugins/zsh-autosuggestions"]
 	path = .oh-my-zsh/custom/plugins/zsh-autosuggestions
 	url = git@github.com:zsh-users/zsh-autosuggestions.git
+	branch = master
 [submodule ".vim/pack/plugins/start/vim-fugitive"]
 	path = .vim/pack/plugins/start/vim-fugitive
 	url = git@github.com:tpope/vim-fugitive.git
+	branch = master
 [submodule ".oh-my-zsh/custom/themes/dracula"]
 	path = .oh-my-zsh/custom/themes/dracula
 	url = git@github.com:dracula/zsh.git
+	branch = master
