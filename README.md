@@ -117,7 +117,17 @@ cd ~/
 dotfiles commit -am "Updated plugins."
 ```
 
-## 3. References
+## 3. dot.local files
+
+For the `.aliases`, `.completion` and `.zshenv` files a local version can also be created, by creating a file with the `.local`-suffix (e.g. .aliases.local). An example
+of those files is included in the repository. The .local files can be used to configure system specific aliases, completions and environment variables. The changes made
+in the .local files will not be commited to the repository, and will not affect other systems. For some examples see the .local.example files:
+
+- [.aliases.local.example](.aliases.local.example)
+- [.completion.local.example](.completion.local.example)
+- [.zshenv.local.example](.zshenv.local.example)
+
+## 4. References
 
 - [Manage Dotfiles With a Bare Git Repository](https://harfangk.github.io/2016/09/18/manage-dotfiles-with-a-git-bare-repository.html)
 - [Using git-submodules to version-control Vim plugins](https://gist.github.com/manasthakur/d4dc9a610884c60d944a4dd97f0b3560)
