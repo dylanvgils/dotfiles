@@ -1,4 +1,9 @@
 # --- Completions ---
 
+# Reload auto completion
+# http://zsh.sourceforge.net/Doc/Release/Completion-System.html
+#
+#     autoload -U compinit && compinit
+
 # Include local completions
 include ~/.completion.local
