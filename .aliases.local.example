@@ -1,3 +1,6 @@
 # --- Aliases ---
 
+#
+# EXAMPLE:
+#
 # alias say_hello=echo "hello"

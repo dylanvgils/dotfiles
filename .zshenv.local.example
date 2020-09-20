@@ -1,3 +1,17 @@
 # --- Exports ---
 
+# Go path
+# export GOPATH=$HOME/go
+# export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
+
+# Node and npm path
+# export N_PREFIX="$HOME/.n"
+# export NPM_PACKAGES="$HOME/.npm-packages"
+# export PATH=$N_PREFIX/bin:$PATH
+# export PATH=$PATH:$NPM_PACKAGES/share/man
+# export PATH=$PATH:$NPM_PACKAGES/bin
+
+#
+# EXAMPLE:
+#
 # export PATH=$PATH:/YOUR/BINARY
