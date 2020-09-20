@@ -2,6 +2,7 @@
 
 # Dotfiles is a git alias to manage the dotfiles in your home directory
 alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"
+compdef dotfiles="git"
 
 # Source optional aliases 
 include ~/.aliases.local
