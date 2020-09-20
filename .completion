@@ -1,0 +1,4 @@
+# --- Completions ---
+
+# Include local completions
+include ~/.completion.local
