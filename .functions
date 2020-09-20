@@ -1,5 +1,8 @@
 # --- Functions ---
 
+#
+# SSH Agent
+#
 # Start ssh agent and source environment
 function start_ssh_agent {
      echo "Initialising new SSH agent..."
@@ -8,17 +11,25 @@ function start_ssh_agent {
      source "${SSH_ENV}" > /dev/null
 }
 
-# Auto execute on source
 # Source SSH settings, if applicable
-if [ -z "$XDG_CURRENT_DESKTOP" ]; then
-    if [ -f "${SSH_ENV}" ]; then
-        source "${SSH_ENV}" > /dev/null
-        #ps ${SSH_AGENT_PID} doesn't work under cywgin
-        ps -ef | grep ${SSH_AGENT_PID} | grep "ssh-agent -t ${SSH_KEY_LIFETIME}$" > /dev/null || {
+function load_ssh_agent {
+    if [ -z "$XDG_CURRENT_DESKTOP" ]; then
+        if [ -f "${SSH_ENV}" ]; then
+            source "${SSH_ENV}" > /dev/null
+            #ps ${SSH_AGENT_PID} doesn't work under cywgin
+            ps -ef | grep ${SSH_AGENT_PID} | grep "ssh-agent -t ${SSH_KEY_LIFETIME}$" > /dev/null || {
+                start_ssh_agent;
+            }
+        else
             start_ssh_agent;
-        }
-    else
-        start_ssh_agent;
+        fi
     fi
-fi
+}
 
+#
+# Helper functions
+#
+# Include optional files
+include() {
+    [[ -f "$1" ]] && source "$1"
+}

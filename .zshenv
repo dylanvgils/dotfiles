@@ -1,9 +1,5 @@
 skip_global_compinit=1
-
-# Helper function for including optional files
-include () {
-    [[ -f "$1" ]] && source "$1"
-}
+source $HOME/.functions
 
 # --- Exports ---
 

@@ -94,3 +94,6 @@ plugins+=(zsh-autosuggestions)
 source $ZSH/oh-my-zsh.sh
 source $HOME/.functions
 source $HOME/.aliases
+
+# Load ssh agent
+load_ssh_agent
