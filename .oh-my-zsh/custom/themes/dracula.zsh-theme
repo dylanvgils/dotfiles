@@ -1,0 +1,1 @@
+/home/dylan/.local/share/zsh/themes/dracula/dracula.zsh-theme

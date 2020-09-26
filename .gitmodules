@@ -26,15 +26,15 @@
 	path = .tmux/plugins/tpm
 	url = git@github.com:tmux-plugins/tpm.git
 	branch = master
-[submodule ".oh-my-zsh/custom/plugins/zsh-autosuggestions"]
-	path = .oh-my-zsh/custom/plugins/zsh-autosuggestions
-	url = git@github.com:zsh-users/zsh-autosuggestions.git
-	branch = master
 [submodule ".vim/pack/plugins/start/vim-fugitive"]
 	path = .vim/pack/plugins/start/vim-fugitive
 	url = git@github.com:tpope/vim-fugitive.git
 	branch = master
-[submodule ".oh-my-zsh/custom/themes/dracula"]
-	path = .oh-my-zsh/custom/themes/dracula
+[submodule ".local/share/zsh/plugins/zsh-autosuggestions"]
+	path = .local/share/zsh/plugins/zsh-autosuggestions
+	url = git@github.com:zsh-users/zsh-autosuggestions.git
+	branch = master
+[submodule ".local/share/zsh/themes/dracula"]
+	path = .local/share/zsh/themes/dracula
 	url = git@github.com:dracula/zsh.git
 	branch = master

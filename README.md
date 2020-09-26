@@ -59,9 +59,8 @@ dotfiles config --local status.showUntrackedFiles no
 This first chapter of this readme described how the dotfiles can be setup on a system. Copying the dotfiles to another system can be done with the following steps:
 
 ```bash
-echo 'alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"' >> $HOME/.zshrc
-source ~/.zshrc
 git clone --bare git@github.com:dylanvgils/dotfiles.git $HOME/.dotfiles.git
+alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"
 dotfiles checkout
 dotfiles submodule update --init
 ```
@@ -89,9 +88,9 @@ To remove submodule `foo`:
 
 ```bash
 cd ~/.vim
-git submodule deinit pack/plugins/start/foo
-git rm -r pack/plugins/start/foo
-rm -r ~/dotfiles.git/modules/pack/plugins/start/foo
+dotfiles submodule deinit pack/plugins/start/foo
+dotfiles rm -r pack/plugins/start/foo
+rm -r ~/.dotfiles.git/modules/pack/plugins/start/foo
 ```
 
 ### 2.3 Update submodule

@@ -24,9 +24,17 @@
 !.zshenv
 !.zshrc
 
-# Allow oh-my-zsh plugin directory
+# Allow zsh data directories
+!.local/
+.local/*
+!.local/share/
+.local/share/*
+!.local/share/zsh/
+
+# # Allow oh-my-zsh plugin directory
+!.oh-my-zsh/
+.oh-my-zsh/*
 !.oh-my-zsh/custom/
-!.oh-my-zsh/custom/**
 
 # Allow tmux configuration files
 !.tmux.conf
