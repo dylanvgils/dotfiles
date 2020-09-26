@@ -5,7 +5,11 @@ alias reload.zsh="source $HOME/.zshrc"
 
 # Dotfiles is a git alias to manage the dotfiles in your home directory
 alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"
-compdef dotfiles="git"
+
+# Set autocompletion for dotfiles when shell is ZSH
+if [ -n "$ZSH" ]; then
+   compdef dotfiles="git"
+fi
 
 # ls
 alias ll="ls -Alh"

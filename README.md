@@ -121,11 +121,11 @@ dotfiles commit -am "Updated plugins."
 
 For the `.aliases`, `.completion` and `.zshenv` files a local version can also be created, by creating a file with the `.local`-suffix (e.g. .aliases.local). An example
 of those files is included in the repository. The .local files can be used to configure system specific aliases, completions and environment variables. The changes made
-in the .local files will not be commited to the repository, and will not affect other systems. For some examples see the .local.example files:
+in the .local files will not be commited to the repository, and will not affect other systems. For some examples see the files below:
 
-- [.aliases.local.example](.docs/examples/.aliases.local)
-- [.completion.local.example](.docs/examples/.completion.local)
-- [.zshenv.local.example](.docs/examples/.zshenv.local)
+- [.aliases.local](.docs/examples/.aliases.local)
+- [.completion.local](.docs/examples/.completion.local)
+- [.zshenv.local](.docs/examples/.zshenv.local)
 
 ## 4. References
 
