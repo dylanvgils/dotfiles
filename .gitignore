@@ -19,12 +19,9 @@
 
 # Allow zsh configuration files
 !.aliases
-!.aliases.local.example
 !.completion
-!.completion.local.example
 !.functions
 !.zshenv
-!.zshenv.local.example
 !.zshrc
 
 # Allow oh-my-zsh plugin directory

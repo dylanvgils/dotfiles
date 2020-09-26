@@ -123,9 +123,9 @@ For the `.aliases`, `.completion` and `.zshenv` files a local version can also b
 of those files is included in the repository. The .local files can be used to configure system specific aliases, completions and environment variables. The changes made
 in the .local files will not be commited to the repository, and will not affect other systems. For some examples see the .local.example files:
 
-- [.aliases.local.example](.aliases.local.example)
-- [.completion.local.example](.completion.local.example)
-- [.zshenv.local.example](.zshenv.local.example)
+- [.aliases.local.example](.docs/examples/.aliases.local)
+- [.completion.local.example](.docs/examples/.completion.local)
+- [.zshenv.local.example](.docs/examples/.zshenv.local)
 
 ## 4. References
 
