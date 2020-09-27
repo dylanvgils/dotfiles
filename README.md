@@ -59,18 +59,20 @@ dotfiles config --local status.showUntrackedFiles no
 This first chapter of this readme described how the dotfiles can be setup on a system. Copying the dotfiles to another system can be done with the following steps:
 
 ```bash
-# Note: zsh should be the default shell and oh-my-zsh should be installed
+# NOTE: zsh should be the default shell and oh-my-zsh should be installed
+# Clone the dotfiles as a bare repository
 git clone --bare git@github.com:dylanvgils/dotfiles.git $HOME/.dotfiles.git
+# Set the dotfiles alias
 alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"
+# Checkout the dotfiles
 dotfiles checkout
+# Initialize the git submodules
 dotfiles submodule update --init
+# Source the new configuration
 source ~/.zshrc
 ```
 
-1) Add the `dotfiles` alias to your shell configuration.
-2) Reload the shell settings to use the alias.
-3) Clone the repository.
-4) If you already have configuration files with identical names, checkout will fail.
+**Note:** Checkout will fail when configuration files with identical names exists.
 
 ## 2. Managing submodules
 

@@ -2,6 +2,7 @@
 
 # Source reload
 alias reload.zsh="source $HOME/.zshrc"
+alias reload.env="source $HOME/.zshenv"
 
 # Dotfiles is a git alias to manage the dotfiles in your home directory
 alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"
