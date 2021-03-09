@@ -33,3 +33,6 @@ function load_ssh_agent {
 include() {
     [[ -f "$1" ]] && source "$1"
 }
+
+# Include the local functions
+include ~/.functions.local

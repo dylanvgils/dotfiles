@@ -1,0 +1,8 @@
+# --- Functions ---
+
+#
+# EXAMPLE:
+#
+# function say_hello {
+#    echo "Hello world"
+#}
