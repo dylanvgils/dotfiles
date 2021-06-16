@@ -1,6 +1,0 @@
-# New plugins can be added by using the plugins.
-# for example:
-#   plugins=(your-plugin)
-#   OR append a plugin
-#   plugins+=(your-plugin)
-
