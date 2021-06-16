@@ -18,6 +18,7 @@
 !.vim/
 
 # Allow zsh configuration files
+!.plugins
 !.aliases
 !.completion
 !.functions
