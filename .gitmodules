@@ -17,7 +17,7 @@
 [submodule ".vim/pack/plugins/opt/onedark.vim"]
 	path = .vim/pack/plugins/opt/onedark.vim
 	url = git@github.com:joshdick/onedark.vim.git
-	branch = master
+	branch = main
 [submodule ".tmux/plugins/tpm"]
 	path = .tmux/plugins/tpm
 	url = git@github.com:tmux-plugins/tpm.git
