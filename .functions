@@ -27,33 +27,10 @@ function load_ssh_agent {
 }
 
 #
-# Git in WSL using the Windows file system
-#
-# Note that this is an temporary work around, to fix the file system
-# performance of git commands
-function git {
-    if isWinDir; then
-        git.exe "$@"
-    else
-        /usr/bin/git "$@"
-    fi
-}
-
-#
 # Helper functions
-#
-# Check if this terminal instance is runnig wsl
-isRunningWsl() {
-    if grep -q "microsoft" /proc/sys/kernel/osrelease; then
-        return $(true)
-    fi
-
-    return $(false)
-}
-
 # Check if the directory is a windows mounted drive
 isWinDir() {
-    if isRunningWsl && [[ $PWD =~ "^/mnt/(c|d)" ]]; then
+    if [[ -v WSL_DISTRO_NAME ]] && [[ $PWD =~ "^/mnt/(c|d)/" ]]; then
         return $(true)
     fi
 

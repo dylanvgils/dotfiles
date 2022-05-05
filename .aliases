@@ -12,6 +12,20 @@ if [ -n "$ZSH" ]; then
    compdef dotfiles="git"
 fi
 
+#
+# Git alias for redirecting git command to Windows, when in the Windows
+# file system.
+#
+# Note that this is an temporary work around, to fix the file system
+# performance of git commands
+function git {
+    if isWinDir; then
+        git.exe "$@"
+    else
+        /usr/bin/git "$@"
+    fi
+}
+
 # ls
 alias ll="ls -Alh"
 
