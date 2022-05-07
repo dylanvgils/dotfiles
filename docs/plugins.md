@@ -16,6 +16,3 @@ This document describes which plugins are installed in the dotfiles repository.
 - **[lightline](https://github.com/itchyny/lightline.vim)**: status line for vim.
 - **[vim-fugitive](https://github.com/tpope/vim-fugitive)**: Git wrapper for vim.
 - **[vim-go](https://github.com/fatih/vim-go)**: Go extension for vim.
-
-
-

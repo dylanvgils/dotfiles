@@ -4,14 +4,6 @@
 alias reload.zsh="source $HOME/.zshrc"
 alias reload.env="source $HOME/.zshenv"
 
-# Dotfiles is a git alias to manage the dotfiles in your home directory
-alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"
-
-# Set autocompletion for dotfiles when shell is ZSH
-if [ -n "$ZSH" ]; then
-   compdef dotfiles="git"
-fi
-
 #
 # Git alias for redirecting git command to Windows, when in the Windows
 # file system.
@@ -19,11 +11,11 @@ fi
 # Note that this is an temporary work around, to fix the file system
 # performance of git commands
 function git {
-    if isWinDir; then
-        git.exe "$@"
-    else
-        /usr/bin/git "$@"
-    fi
+  if isWinDir; then
+    git.exe "$@"
+  else
+    /usr/bin/git "$@"
+  fi
 }
 
 # ls

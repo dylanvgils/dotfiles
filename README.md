@@ -1,137 +1,170 @@
-# Using git-submodules (dotfiles) to manage shell configuration
+# Dotfiles
+> Dotfiles allow to share configuration across multiple computers, with the convenience of using git.
 
-This readme is intended to describe the process of setting up and using git-submodules (dotfiles)
-to manage the configuration (dotfiles) on your system. Using git-submodules allows to distribute
-those configurations across multiple computers, with the convenience of using git.
+This repository contains my shell configuration files (a.k.a dotfiles). It can be cloned into the home directory and installed (or removed) with the included `Makefile`. The next sections describes how this repository can be used.
 
-## 1. Installing
+## 1. Prerequisites
+Make sure the following packages are installed on the system:
+- [git](https://git-scm.com/)
+- [zsh](https://www.zsh.org/)
+- [make](https://www.gnu.org/software/make/)
+- [stow](https://www.gnu.org/software/stow/)
+- [oh-my-zsh](https://ohmyz.sh/)
 
-### 1.1 Creating the repository
+For example, run the following commands to install the packages:
+```sh
+# Ubuntu (or other distro using Aptitude)
+sudo apt-get update && sudo apt-get install git zsh make stow
 
-The **first step** of managing the configuration in your home directory is creating new bare git repository.
-Creating the bare git repository can be done with the following command:
-
-```bash
-git init --bare $HOME/.dotfiles.git
+# Fedora (or other distro using dnf)
+sudo dnf install git zsh make stow
 ```
 
-The **second step** is creating an alias in the `.zshrc` or `.bashrc` file, e.g.:
+For installing `oh-my-zsh`, use the script listed on their [website](https://ohmyz.sh/#install).
 
-```bash
-alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"
+## 2. Installing
+This section describes how the dotfiles can be installed in your home directory, `stow` and `make` are the tools to make this as easy as possible.
+
+## 2.1 Clone the repository
+This first step is cloning the git repository to your system, use the following commands:
+
+```sh
+# Change the directory to the home directory
+cd ~
+
+# Clone the repository
+# For http(s):
+git clone https://github.com/dylanvgils/dotfiles.git
+# OR, for ssh:
+git clone git@github.com:dylanvgils/dotfiles.git
 ```
 
-or use one of the commands below:
+## 2.2 Symlink the configuration files
+Once the repository is cloned to the system, make can be used to symlink the configuration in the repository to the home directory.
 
-```bash
-# For zsh use:
-echo 'alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"' >> $HOME/.zshrc
+> **NOTE:** existing files are not overridden, which should be solved first. Either delete or move the file out of the home directory.
 
-# For bash use:
-echo 'alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"' >> $HOME/.bashrc
+To make the configuration active on your system, you can execute the following commands:
+
+```sh
+# Change directory to the dotfiles repository root
+cd ~/dotfiles
+
+# Run the initialize command
+make init
+
+# Source the newly added configuration
+source ~/.zshenv && source ~/.zshrc
 ```
 
-The **third step** is reloading the sell setting, use one of the following commands:
+## 2.3 Update the configuration to the latest version
+To update the dotfiles to the latest version execute the following commands:
 
-```bash
-# For zsh use:
-source ~/.zshrc
+```sh
+# Change directory to the dotfiles repository root
+cd ~/dotfiles
 
-# For bash use
-source ~/.bashrc
+# Pull the latest changes from the remote
+git pull origin main
+
+# Run the stow command using make (implicit call to 'all' target)
+make
+
+# Reload the shell configuration
+reload.env && reload.zsh
 ```
 
-The **fourth step** is setting the remote of the git repository:
+## 2.4 Uninstall the dotfiles from the system
+The `Makefile` also contains a target to remove all the symlinks fro the home directory. To Uninstall the shell configuration execute the following commands:
 
-```bash
-dotfiles remote add origin git@github.com/dylanvgils/dotfiles.git
+> **NOTE:** The easiest way to make the changes affective is to logout an back in again. This will reload the entire shell configuration.
+
+```sh
+# Change directory to the dotfiles repository root
+cd ~/dotfiles
+
+# Run the stow command using make
+make delete
 ```
 
-**Optionally** you can set the `showUntrackedFiles` to `no` to hide the untracked files when calling `git status`.
-This can be done with the following command:
+## 3. Managing submodules
+Git submodules are used to manage shell dependencies. This section describes how submodules can be added, updated or removed from the repository.
 
-```bash
-dotfiles config --local status.showUntrackedFiles no
-```
-
-### 1.2 Installing dotfiles on another system
-
-This first chapter of this readme described how the dotfiles can be setup on a system. Copying the dotfiles to another system can be done with the following steps:
-
-```bash
-# NOTE: zsh should be the default shell and oh-my-zsh should be installed
-# Clone the dotfiles as a bare repository
-git clone --bare git@github.com:dylanvgils/dotfiles.git $HOME/.dotfiles.git
-# Set the dotfiles alias
-alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"
-# Checkout the dotfiles
-dotfiles checkout
-# Initialize the git submodules
-dotfiles submodule update --init
-# Source the new configuration
-source ~/.zshrc
-```
-
-**Note:** Checkout will fail when configuration files with identical names exists.
-
-## 2. Managing submodules
-
-### 2.1 Add submodule
-
+### 3.1 Add submodule
 Let say that we want to install the `bar` plugin in the `.vim` directory, using Vim 8's package feature:
 
 ```bash
-cd ~/.vim
-dotfiles submodule add git@github.com/username/foo.git pack/plugins/start/foo
-dotfiles commit -m "Added submodules."
+# Change directory into the module directory
+cd ~/dotfiles/vim
+
+# Add the submodule in the desired location
+git submodule add git@github.com/username/foo.git pack/plugins/start/foo
+
+# Commit the changes to the repository
+git commit -m "Add bar submodule to vim"
+
+# Reload the shell configuration
+reload.env && reload.zsh
 ```
 
-### 2.2 Removing submodule
-
-To remove submodule `foo`:
+### 3.2 Removing submodule
+Once a module is obsolete or is not used anymore, use the following commands to remove submodule `bar`:
 
 ```bash
-cd ~/.vim
-dotfiles submodule deinit pack/plugins/start/foo
-dotfiles rm -r pack/plugins/start/foo
-rm -r ~/.dotfiles.git/modules/pack/plugins/start/foo
+# Change directory into the module directory
+cd ~/dotfiles/vim
+
+# De-init the submodule
+git submodule deinit .vim/pack/plugins/start/bar
+
+# Remove the directory from the sources
+git rm -r .vim/pack/plugins/start/bar
+
+# Remove the submodule from the .dit directory
+rm -r .git/modules/vim/.vim/pack/plugins/start/bar
 ```
 
-### 2.3 Update submodule
+### 3.3 Update submodule
+Once in a while submodules have to be updated, the following commands can be used to update the module `bar`:
 
-To update `foo`:
+> **NOTE:** git submodule update will not commit the changes to the repository. Make sure that the changes are committed to the repository when you are done updating.
 
 ```bash
-cd ~/.vim/pack/plugins/start/foo
-dotfiles pull origin master
+# Change directory into the module directory
+cd ~/vim/.vim/pack/plugins/start/bar
+
+# Pull changes from the desired branch (e.g. main)
+git pull origin main
 ```
 
-To update all submodules:
+It is also possible to update all the submodules at once, to update all the modules execute the following command:
 
 ```bash
-cd ~/
-dotfiles submodule update --recursive --remote
+# Change directory into the dotfiles directory
+cd ~/dotfiles
+
+# Update the submodules
+make update
+# OR, use the git command
+git submodule update --recursive --remote
+
+# Reload the shell configuration
+reload.env && reload.zsh
 ```
 
-Updating submodules will create uncommitted changes in the dotfiles repository. So when submodules are updated, you need to commit the dotfiles repository as well:
-
-```bash
-cd ~/
-dotfiles commit -am "Updated plugins."
-```
-
-## 3. dot.local files
+## 4. System specific configuration
 
 For the `.aliases`, `.completion` and `.zshenv` files a local version can also be created, by creating a file with the `.local`-suffix (e.g. .aliases.local). An example
 of those files is included in the repository. The .local files can be used to configure system specific aliases, completions and environment variables. The changes made
-in the .local files will not be commited to the repository, and will not affect other systems. For some examples see the files below:
+in the .local files will not be committed to the repository, and will not affect other systems. For some examples see the files below:
 
-- [.aliases.local](.docs/examples/.aliases.local)
-- [.completion.local](.docs/examples/.completion.local)
-- [.zshenv.local](.docs/examples/.zshenv.local)
+- [.aliases.local](docs/examples/.aliases.local)
+- [.completion.local](docs/examples/.completion.local)
+- [.zshenv.local](docs/examples/.zshenv.local)
 
-## 4. References
+## 5. References
 
 - [Manage Dotfiles With a Bare Git Repository](https://harfangk.github.io/2016/09/18/manage-dotfiles-with-a-git-bare-repository.html)
 - [Using git-submodules to version-control Vim plugins](https://gist.github.com/manasthakur/d4dc9a610884c60d944a4dd97f0b3560)
 - [Using ssh-agent with ssh](http://mah.everybody.org/docs/ssh)
+- [Managing dotfiles with GNU stow](https://venthur.de/2021-12-19-managing-dotfiles-with-stow.html)

@@ -1,32 +1,32 @@
-[submodule ".vim/pack/default/start/vim-polyglot"]
-	path = .vim/pack/default/start/vim-polyglot
+[submodule "vim/.vim/pack/default/start/vim-polyglot"]
+	path = vim/.vim/pack/default/start/vim-polyglot
 	url = https://github.com/sheerun/vim-polyglot.git
 	branch = master
-[submodule ".vim/pack/plugins/start/editorconfig-vim"]
-	path = .vim/pack/plugins/start/editorconfig-vim
-	url = git@github.com:editorconfig/editorconfig-vim.git
+[submodule "vim/.vim/pack/plugins/start/vim-fugitive"]
+	path = vim/.vim/pack/plugins/start/vim-fugitive
+	url = https://github.com/tpope/vim-fugitive.git
 	branch = master
-[submodule ".vim/pack/plugins/start/lightline"]
-	path = .vim/pack/plugins/start/lightline
-	url = git@github.com:itchyny/lightline.vim.git
-	branch = master
-[submodule ".vim/pack/plugins/opt/onedark.vim"]
-	path = .vim/pack/plugins/opt/onedark.vim
-	url = git@github.com:joshdick/onedark.vim.git
+[submodule "vim/.vim/pack/plugins/opt/onedark.vim"]
+	path = vim/.vim/pack/plugins/opt/onedark.vim
+	url = https://github.com/joshdick/onedark.vim.git
 	branch = main
-[submodule ".tmux/plugins/tpm"]
-	path = .tmux/plugins/tpm
-	url = git@github.com:tmux-plugins/tpm.git
+[submodule "vim/.vim/pack/plugins/start/editorconfig-vim"]
+	path = vim/.vim/pack/plugins/start/editorconfig-vim
+	url = https://github.com/editorconfig/editorconfig-vim.git
 	branch = master
-[submodule ".vim/pack/plugins/start/vim-fugitive"]
-	path = .vim/pack/plugins/start/vim-fugitive
-	url = git@github.com:tpope/vim-fugitive.git
+[submodule "vim/.vim/pack/plugins/start/lightline"]
+	path = vim/.vim/pack/plugins/start/lightline
+	url = https://github.com/itchyny/lightline.vim.git
 	branch = master
-[submodule ".local/share/zsh/plugins/zsh-autosuggestions"]
-	path = .local/share/zsh/plugins/zsh-autosuggestions
-	url = git@github.com:zsh-users/zsh-autosuggestions.git
+[submodule "tmux/.tmux/plugins/tpm"]
+	path = tmux/.tmux/plugins/tpm
+	url = https://github.com/tmux-plugins/tpm.git
 	branch = master
-[submodule ".local/share/zsh/themes/dracula"]
-	path = .local/share/zsh/themes/dracula
-	url = git@github.com:dracula/zsh.git
+[submodule "zsh/.local/zsh/plugins/zsh-autosuggestions"]
+	path = zsh/.local/zsh/plugins/zsh-autosuggestions
+	url = https://github.com/zsh-users/zsh-autosuggestions.git
+	branch = master
+[submodule "zsh/.local/zsh/themes/dracula"]
+	path = zsh/.local/zsh/themes/dracula
+	url = https://github.com/dracula/zsh.git
 	branch = master

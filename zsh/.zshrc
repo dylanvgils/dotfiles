@@ -98,4 +98,3 @@ source $HOME/.completion
 
 # Load ssh agent
 load_ssh_agent
-
