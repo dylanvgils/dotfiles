@@ -2,5 +2,5 @@
 
 # Example
 # To enable auto completion for docker and docker-compose
-add the following line to your .zshrc.local file
+# add the following line to your .zshrc.local file
 # plugins+=(docker docker-compose)
