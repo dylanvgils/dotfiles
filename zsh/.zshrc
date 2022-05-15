@@ -62,8 +62,18 @@ ZSH_THEME="dracula"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git docker)
-plugins+=(zsh-autosuggestions)
+plugins=(git zsh-autosuggestions)
+
+# Load the shell functions, this intoduces the include function,
+# which can be used to source option files, for example the local
+# .zshrc file.
+source $HOME/.functions
+
+# Load the optional z-shell configuraiton file, which can be used
+# to override the default shell config on the system.
+include $HOME/.zshrc.local
+
+source $ZSH/oh-my-zsh.sh
 
 # User configuration
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -90,9 +100,7 @@ plugins+=(zsh-autosuggestions)
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-# Source
-source $ZSH/oh-my-zsh.sh
-source $HOME/.functions
+# Load the shell aliases and the completion configuration
 source $HOME/.aliases
 source $HOME/.completion
 

@@ -154,12 +154,13 @@ reload.env && reload.zsh
 
 ## 4. System specific configuration
 
-For the `.aliases`, `.completion` and `.zshenv` files a local version can also be created, by creating a file with the `.local`-suffix (e.g. .aliases.local). An example
+For the `.aliases`, `.completion`, `.zshrc` and `.zshenv` files a local version can also be created, by creating a file with the `.local`-suffix (e.g. .aliases.local). An example
 of those files is included in the repository. The .local files can be used to configure system specific aliases, completions and environment variables. The changes made
 in the .local files will not be committed to the repository, and will not affect other systems. For some examples see the files below:
 
 - [.aliases.local](docs/examples/.aliases.local)
 - [.completion.local](docs/examples/.completion.local)
+- [.zshrc.local](docs/examples/.zshrc.local)
 - [.zshenv.local](docs/examples/.zshenv.local)
 
 ## 5. References
