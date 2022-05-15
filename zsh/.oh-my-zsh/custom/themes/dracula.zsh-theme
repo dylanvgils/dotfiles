@@ -1,1 +1,1 @@
-../../../.local/zsh/themes/dracula/dracula.zsh-theme
+../../../.local/share/zsh/themes/dracula/dracula.zsh-theme

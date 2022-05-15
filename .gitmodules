@@ -22,11 +22,11 @@
 	path = tmux/.tmux/plugins/tpm
 	url = https://github.com/tmux-plugins/tpm.git
 	branch = master
-[submodule "zsh/.local/zsh/plugins/zsh-autosuggestions"]
-	path = zsh/.local/zsh/plugins/zsh-autosuggestions
+[submodule "zsh/.local/share/zsh/plugins/zsh-autosuggestions"]
+	path = zsh/.local/share/zsh/plugins/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions.git
 	branch = master
-[submodule "zsh/.local/zsh/themes/dracula"]
-	path = zsh/.local/zsh/themes/dracula
+[submodule "zsh/.local/share/zsh/themes/dracula"]
+	path = zsh/.local/share/zsh/themes/dracula
 	url = https://github.com/dracula/zsh.git
 	branch = master
