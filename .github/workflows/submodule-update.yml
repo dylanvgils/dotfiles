@@ -1,6 +1,8 @@
 name: "Update submodule references"
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 23 * * 5' # Run every friday at 23:00
 jobs:
   update-submodule-references:
     name: "Update submodule references"
@@ -16,4 +18,4 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -am "[bot] Updated submodule references" && git push || echo "No changes to commit"
+          git commit -am "Updated submodule references" && git push || echo "No changes to commit"
