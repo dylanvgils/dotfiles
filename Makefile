@@ -10,7 +10,7 @@ all:
 init: submodule.init all
 
 # Update upates all submodules and recreates the symbolic liks in the home directory
-update: submodule.update all
+update: pull submodule.update all
 
 # Submodule.init initializes the submodules
 submodule.init:
@@ -23,3 +23,7 @@ submodule.update:
 # Delete removes all the symlinks from the home directory
 delete:
 	stow --target=$$HOME --delete */
+
+# Pull pulls the latests refs from the remote repository
+pull:
+	git pull origin $(git rev-parse --abbrev-ref HEAD)
