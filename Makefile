@@ -24,6 +24,6 @@ submodule.update:
 delete:
 	stow --target=$$HOME --delete */
 
-# Pull pulls the latests refs from the remote repository
+# Pull pulls the latest refs from the remote repository
 pull:
-	git pull origin $(git rev-parse --abbrev-ref HEAD)
+	git pull origin $$(git rev-parse --abbrev-ref HEAD)
