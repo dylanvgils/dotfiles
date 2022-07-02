@@ -163,7 +163,12 @@ in the .local files will not be committed to the repository, and will not affect
 - [.zshrc.local](docs/examples/.zshrc.local)
 - [.zshenv.local](docs/examples/.zshenv.local)
 
-## 5. References
+## Known issues
+The `docs` folder contains a [issues.md](docs/issues.md) file, this file describes the known issues in the repository.
+
+---
+
+## References
 
 - [Manage Dotfiles With a Bare Git Repository](https://harfangk.github.io/2016/09/18/manage-dotfiles-with-a-git-bare-repository.html)
 - [Using git-submodules to version-control Vim plugins](https://gist.github.com/manasthakur/d4dc9a610884c60d944a4dd97f0b3560)
