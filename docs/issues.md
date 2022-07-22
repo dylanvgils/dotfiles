@@ -8,7 +8,7 @@ Due to an issue is you in the Dracula zsh theme the autocomplete maybe doesn't w
 To fix this issue revert to commit `d7626ad`, this can be done with the following command:
 
 ```bash
-cd ./zsh/.local/share/zsh/themes
+cd ./zsh/.local/share/zsh/themes/dracula
 git checkout d7626ad9ed3fb1929082bd3d6815160d8e016247
 ```
 
