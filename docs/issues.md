@@ -1,7 +1,7 @@
 # Known issues
 This page describes the known issues of this dotfiles repository.
 
-## Autocomplete not working correctly
+## Autocomplete not working correctly (Solved)
 Due to an issue is you in the Dracula zsh theme the autocomplete maybe doesn't work correctly. For example:
 
 
