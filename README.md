@@ -1,7 +1,8 @@
 # Dotfiles
-> Dotfiles allow to share configuration across multiple computers, with the convenience of using git.
 
-This repository contains my shell configuration files (a.k.a dotfiles). It can be cloned into the home directory and installed (or removed) with the included `Makefile`. The next sections describes how this repository can be used.
+> Dotfiles allow sharing of configuration files across multiple computers, with the convenience of using git.
+
+This repository contains my shell configuration files (a.k.a dotfiles). It can be cloned to the home directory and installed (or removed) with the included `Makefile`. The sections below describe how this repositry can be used.
 
 ## 1. Prerequisites
 Make sure the following packages are installed on the system:
@@ -13,10 +14,10 @@ Make sure the following packages are installed on the system:
 
 For example, run the following commands to install the packages:
 ```sh
-# Ubuntu (or other distro using Aptitude)
+# Ubuntu (or other distros using Aptitude)
 sudo apt-get update && sudo apt-get install git zsh make stow
 
-# Fedora (or other distro using dnf)
+# Fedora (or other distros using dnf)
 sudo dnf install git zsh make stow
 ```
 
@@ -26,7 +27,7 @@ For installing `oh-my-zsh`, use the script listed on their [website](https://ohm
 This section describes how the dotfiles can be installed in your home directory, `stow` and `make` are the tools to make this as easy as possible.
 
 ## 2.1 Clone the repository
-This first step is cloning the git repository to your system, use the following commands:
+This first step is cloning this repostory to your system, use the following commands:
 
 ```sh
 # Change the directory to the home directory
@@ -40,7 +41,7 @@ git clone git@github.com:dylanvgils/dotfiles.git
 ```
 
 ## 2.2 Symlink the configuration files
-Once the repository is cloned to the system, make can be used to symlink the configuration in the repository to the home directory.
+Once the repository is cloned to the system, `make` can be used to symlink the configuration in the repository to the home directory.
 
 > **NOTE:** existing files are not overridden, which should be solved first. Either delete or move the file out of the home directory.
 
@@ -154,9 +155,7 @@ reload.env && reload.zsh
 
 ## 4. System specific configuration
 
-For the `.aliases`, `.completion`, `.zshrc` and `.zshenv` files a local version can also be created, by creating a file with the `.local`-suffix (e.g. .aliases.local). An example
-of those files is included in the repository. The .local files can be used to configure system specific aliases, completions and environment variables. The changes made
-in the .local files will not be committed to the repository, and will not affect other systems. For some examples see the files below:
+For the `.aliases`, `.completion`, `.zshrc` and `.zshenv` files a local version can also be created by creating a file with the `.local`-suffix (e.g. .aliases.local). An example of these files is included in the repository. The .local files can be used to configure system specific aliases, completions and environment variables. The changes made to the .local files will not be committed and thus will not affect other systems. For some examples see the files below:
 
 - [.aliases.local](docs/examples/.aliases.local)
 - [.completion.local](docs/examples/.completion.local)
