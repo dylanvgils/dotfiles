@@ -4,3 +4,4 @@
 # tmux plugins installed via Plug
 tmux/.tmux/plugins/tmux-sensible/
 tmux/.tmux/plugins/tmux/
+tmux/.tmux/plugins/vim-tmux-navigator/
