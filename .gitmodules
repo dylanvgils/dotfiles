@@ -30,7 +30,7 @@
 	path = zsh/.local/share/zsh/themes/dracula
 	url = https://github.com/dracula/zsh.git
 	branch = master
-[submodule "zsh/.oh-my-zsh/custom/plugins/zsh-nvm"]
-	path = zsh/.oh-my-zsh/custom/plugins/zsh-nvm
-	url = https://github.com/lukechilds/zsh-nvm
+[submodule "zsh/.local/share/zsh/plugins/zsh-nvm"]
+	path = zsh/.local/share/zsh/plugins/zsh-nvm
+	url = https://github.com/lukechilds/zsh-nvm.git
 	branch = master
