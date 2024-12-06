@@ -3,3 +3,8 @@
 
 # tmux plugins installed via TPM
 tmux/.config/tmux/plugins/
+
+# Ignore everything in local/share except (zsh)
+**/.local/share/*
+**/.local/share/*/
+!**/.local/share/zsh/
