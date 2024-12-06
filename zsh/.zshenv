@@ -13,10 +13,8 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
 
-# Global node_modules install path
-export NPM_PACKAGES="$HOME/.local/share/npm"
-export PATH=$PATH:$NPM_PACKAGES/share/man
-export PATH=$PATH:$NPM_PACKAGES/bin
+# NVM directory
+export NVM_DIR="$XDG_DATA_HOME/nvm"
 
 # Ssh agent variables
 export SSH_ENV="$HOME/.ssh/environment"

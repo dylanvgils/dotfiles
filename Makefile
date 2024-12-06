@@ -1,6 +1,5 @@
 # All recreates all dotfile symlinks to the home directory
 all:
-	stow --target=$$HOME --restow npm
 	stow --target=$$HOME --restow ssh
 	stow --target=$$HOME --restow tmux
 	stow --target=$$HOME --restow vim
