@@ -1,2 +1,6 @@
 # Ignore the vscode extensions directory
 .vscode/
+
+# tmux plugins installed via Plug
+tmux/.tmux/plugins/tmux-sensible/
+tmux/.tmux/plugins/tmux/
