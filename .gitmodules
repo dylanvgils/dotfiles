@@ -18,8 +18,8 @@
 	path = vim/.vim/pack/plugins/start/lightline
 	url = https://github.com/itchyny/lightline.vim.git
 	branch = master
-[submodule "tmux/.tmux/plugins/tpm"]
-	path = tmux/.tmux/plugins/tpm
+[submodule "tmux/.config/tmux/plugins/tpm"]
+	path = tmux/.config/tmux/plugins/tpm
 	url = https://github.com/tmux-plugins/tpm.git
 	branch = master
 [submodule "zsh/.local/share/zsh/plugins/zsh-autosuggestions"]
@@ -33,3 +33,4 @@
 [submodule "zsh/.oh-my-zsh/custom/plugins/zsh-nvm"]
 	path = zsh/.oh-my-zsh/custom/plugins/zsh-nvm
 	url = https://github.com/lukechilds/zsh-nvm
+	branch = master

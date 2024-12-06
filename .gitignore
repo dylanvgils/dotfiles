@@ -1,7 +1,5 @@
 # Ignore the vscode extensions directory
 .vscode/
 
-# tmux plugins installed via Plug
-tmux/.tmux/plugins/tmux-sensible/
-tmux/.tmux/plugins/tmux/
-tmux/.tmux/plugins/vim-tmux-navigator/
+# tmux plugins installed via TPM
+tmux/.config/tmux/plugins/
