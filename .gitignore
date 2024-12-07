@@ -6,8 +6,13 @@
 **/.config/*/
 
 # Allow tmux config dir except plugins
-!tmux/.config/tmux/
-tmux/.config/tmux/plugins/
+!**/.config/tmux/
+**/.config/tmux/*
+!**/.config/tmux/plugins/
+**/.config/tmux/plugins/*
+!**/.config/tmux/plugins/tpm/
+
+!**/.config/tmux/tmux.config
 
 # Ignore everything in local/share except (zsh)
 **/.local/*
