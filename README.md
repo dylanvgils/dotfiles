@@ -4,6 +4,12 @@
 
 This repository contains my shell configuration files (a.k.a dotfiles). It can be cloned to the home directory and installed (or removed) with the included `Makefile`. The sections below describe how this repositry can be used.
 
+The easiest way to install the dotfiles is to use the install script, which can be executed with the following command:
+
+```sh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/dylanvgils/dotfiles/main/install.sh)"
+```
+
 ## 1. Prerequisites
 Make sure the following packages are installed on the system:
 - [git](https://git-scm.com/)
