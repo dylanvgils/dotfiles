@@ -1,10 +1,15 @@
 # Ignore the vscode extensions directory
 .vscode/
 
-# tmux plugins installed via TPM
+# Ignore everything in .config directory
+**/.config/*
+**/.config/*/
+
+# Allow tmux config dir except plugins
+!tmux/.config/tmux/
 tmux/.config/tmux/plugins/
 
 # Ignore everything in local/share except (zsh)
-**/.local/share/*
-**/.local/share/*/
+**/.local/*
+**/.local/*/
 !**/.local/share/zsh/
