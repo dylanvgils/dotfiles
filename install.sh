@@ -106,5 +106,6 @@ else
 fi
 
 # Run the new shell
+log_header "Done! Start shell"
 $SHELL
 
