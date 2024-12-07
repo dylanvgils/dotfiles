@@ -92,6 +92,19 @@ sudo apt install -y tmux
 log_info "Install tmux plugins"
 $config_dir/tmux/plugins/tpm/bin/install_plugins
 
+# Install lazygit
+log_header "Install lazygit"
+if [ -z "$(which lazygit)" ]; then
+  lazygit_version=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
+  curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_Linux_x86_64.tar.gz"
+
+  tar xf lazygit.tar.gz lazygit
+  sudo install lazygit -D -t /usr/local/bin/
+  rm -r lazygit.tar.gz lazygit
+else
+  log_info "Lazygit alread installed"
+fi
+
 # Run the new shell
 $SHELL
 
