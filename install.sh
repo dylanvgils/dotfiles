@@ -8,6 +8,7 @@ dotfiles_dir="$HOME/dotfiles"
 config_dir="$HOME/.config"
 
 omzsh_install_script="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+nvim_download_url="https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz"
 
 #
 # Functions
@@ -40,8 +41,8 @@ log_header "Update package list"
 sudo apt update
 
 # Install required packages
-log_header "Install required packages (zsh, make, stow, curl)"
-sudo apt install -y git zsh make stow curl
+log_header "Install required packages (zsh, make, stow, curl, zip)"
+sudo apt install -y git zsh make stow curl zip
 
 # Make sure ZSH is the default shell
 log_header "Change shell to ZSH"
@@ -115,6 +116,13 @@ if [ -z "$(which lazygit)" ]; then
 else
   log_info "Lazygit alread installed"
 fi
+
+# Install Neovim (nvim)
+log_header "Install Neovim"
+curl -Lo /tmp/nvim-linux64.tar.gz $nvim_download_url
+sudo rm -rf /opt/nvim
+sudo tar -C /opt -xzf /tmp/nvim-linux64.tar.gz
+rm /tmp/nvim-linux64.tar.gz
 
 # Run the new shell
 log_header "Done! Start shell"
