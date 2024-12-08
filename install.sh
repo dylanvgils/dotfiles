@@ -107,11 +107,11 @@ $config_dir/tmux/plugins/tpm/bin/install_plugins
 log_header "Install lazygit"
 if [ -z "$(which lazygit)" ]; then
   lazygit_version=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
-  curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_Linux_x86_64.tar.gz"
+  curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_Linux_x86_64.tar.gz"
 
-  tar xf lazygit.tar.gz lazygit
-  sudo install lazygit -D -t /usr/local/bin/
-  rm -r lazygit.tar.gz lazygit
+  tar -xf /tmp/lazygit.tar.gz -C /tmp
+  sudo install /tmp/lazygit -D -t /usr/local/bin/
+  rm -r /tmp/lazygit.tar.gz /tmp/lazygit
 else
   log_info "Lazygit alread installed"
 fi
