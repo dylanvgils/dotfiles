@@ -2,7 +2,7 @@
 #
 # Variables
 #
-dotfiles_repo="git@github.com:dylanvgils/dotfiles.git"
+dotfiles_repo="https://github.com/dylanvgils/dotfiles.git"
 dotfiles_dir="$HOME/dotfiles"
 
 config_dir="$HOME/.config"
