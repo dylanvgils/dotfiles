@@ -20,10 +20,20 @@ log_header() {
   log_info "\n========== $1 ==========\n"
 }
 
+create_dir() {
+  if [ ! -d "$1" ]; then
+    mkdir -p $1
+  fi
+}
+
 #
 # Script
 #
 log_header "Start dotfiles installation"
+
+# Ensure config and local directories exist
+create_dir "$HOME/.config"
+create_dir "$HOME/.local/share"
 
 # Make sure the package list is up-to-date
 log_header "Update package list"
@@ -90,6 +100,7 @@ log_header "Install tmux"
 sudo apt install -y tmux
 
 log_info "Install tmux plugins"
+export TMUX_PLUGIN_MANAGER_PATH="$config_dir/tmux/plugins"
 $config_dir/tmux/plugins/tpm/bin/install_plugins
 
 # Install lazygit
