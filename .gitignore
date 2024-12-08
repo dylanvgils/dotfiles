@@ -14,6 +14,9 @@
 
 !**/.config/tmux/tmux.config
 
+# Allow Neovim config
+!**/.config/nvim/
+
 # Ignore vim except pack
 **/.vim/*
 **/.vim/*/
@@ -23,3 +26,6 @@
 **/.local/*
 **/.local/*/
 !**/.local/share/zsh/
+
+# Ignore node modules
+**/node_modules/
