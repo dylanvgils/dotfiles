@@ -41,8 +41,8 @@ log_header "Update package list"
 sudo apt update
 
 # Install required packages
-log_header "Install required packages (zsh, make, stow, curl, zip, build-essential)"
-sudo apt install -y git zsh make stow curl zip build-essential
+log_header "Install required packages (zsh, make, stow, curl, zip, xsel, build-essential)"
+sudo apt install -y git zsh make stow curl zip xsel build-essential
 
 # Make sure ZSH is the default shell
 log_header "Change shell to ZSH"
@@ -82,11 +82,11 @@ log_info "Remove default config files"
 
 config_files_to_remove=".aliases .completions .functions .zshenv .zshrc .zshrc.pre-oh-my-zsh .tmux.conf"
 for item in $config_files_to_remove; do
-    file="$HOME/$(echo "$item" | xargs)"
-    if [ -f "$file" ]; then
-      rm "$file"
-      echo "Removed file: $file"
-    fi
+  file="$HOME/$(echo "$item" | xargs)"
+  if [ -f "$file" ]; then
+    rm "$file"
+    echo "Removed file: $file"
+  fi
 done
 
 # Apply configuration
@@ -131,4 +131,3 @@ sudo update-alternatives --set vim $(which nvim)
 # Run the new shell
 log_header "Done! Start shell"
 $SHELL
-

@@ -5,3 +5,4 @@ vim.g.loaded_netrwPlugin = 1
 require("config.lazy")
 
 vim.cmd([[colorscheme onedark]])
+vim.opt.clipboard = "unnamedplus"
