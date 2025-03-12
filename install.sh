@@ -7,6 +7,7 @@ dotfiles_dir="$HOME/dotfiles"
 
 config_dir="$HOME/.config"
 
+homebrew_install_script="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 omzsh_install_script="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
 nvim_download_url="https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz"
 
@@ -31,27 +32,59 @@ create_dir() {
 # Script
 #
 log_header "Start dotfiles installation"
+log_info "Detecting platform..."
+platform="unkown"
+
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
+  platform="linux"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+  platform="darwin"
+else
+  log_info "Platform '$OSTYPE' not supported"
+  exit 1
+fi
+
+log_info "Platform '$platform' detected"
+
+# Prepare system
+if [[ "$platform" == "darwin" ]]; then
+  log_header "Prepare system"
+
+  # Ensure homebrew is installed
+  if [ -z "$(which brew)" ]; then
+    log_info "Install homebrew"
+    /bin/bash -c "$(curl -fsSL $homebrew_install_script)"
+  else
+    log_info "Update homebrew"
+    brew update
+  fi
+fi
 
 # Ensure config and local directories exist
 create_dir "$HOME/.config"
 create_dir "$HOME/.local/share"
 
-# Make sure the package list is up-to-date
-log_header "Update package list"
-sudo apt update
+# Update and install required packages
+log_header "Install required packages"
+if [[ "$platform" == "linux" ]]; then 
+  log_header "Update package list"
+  sudo apt update
 
-# Install required packages
-log_header "Install required packages (zsh, make, stow, curl, zip, xsel, build-essential)"
-sudo apt install -y git zsh make stow curl zip xsel build-essential
+  log_info "Install using aptitude (zsh, make, stow, curl, zip, xsel, build-essential)"
+  sudo apt install -y git zsh make stow curl zip xsel build-essential
 
-# Make sure ZSH is the default shell
-log_header "Change shell to ZSH"
-log_info "Current shell $SHELL"
+  # Make sure ZSH is the default shell
+  log_header "Change shell to ZSH"
+  log_info "Current shell $SHELL"
 
-zsh_location="$(which zsh)"
-if [ "$SHELL" != "$zsh_location" ]; then
-  log_info "Chaging default shell to zsh for $USER"
-  chsh -s $(echo $zsh_location)
+  zsh_location="$(which zsh)"
+  if [ "$SHELL" != "$zsh_location" ]; then
+    log_info "Chaging default shell to zsh for $USER"
+    chsh -s $(echo $zsh_location)
+  fi
+elif [[ "$platform" == "darwin" ]]; then
+  log_info "Install using homebrew (git stow)"
+  brew install git stow
 fi
 
 # Install oh-my-zsh
@@ -98,7 +131,13 @@ make init
 
 # Install tmux
 log_header "Install tmux"
-sudo apt install -y tmux
+if [[ "$platform" == "linux" ]]; then 
+  log_info "Install using aptitude"
+  sudo apt install -y tmux
+elif [[ "$platform" == "darwin" ]]; then
+  log_info "Install using homebrew"
+  brew install tmux
+fi
 
 log_info "Install tmux plugins"
 export TMUX_PLUGIN_MANAGER_PATH="$config_dir/tmux/plugins"
@@ -106,27 +145,40 @@ $config_dir/tmux/plugins/tpm/bin/install_plugins
 
 # Install lazygit
 log_header "Install lazygit"
-if [ -z "$(which lazygit)" ]; then
-  lazygit_version=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
-  curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_Linux_x86_64.tar.gz"
+if [[ "$platform" == "linux" ]]; then 
+  log_info "Install from source"
 
-  tar -xf /tmp/lazygit.tar.gz -C /tmp
-  sudo install /tmp/lazygit -D -t /usr/local/bin/
-  rm -r /tmp/lazygit.tar.gz /tmp/lazygit
-else
-  log_info "Lazygit alread installed"
+  if [ -z "$(which lazygit)" ]; then
+    lazygit_version=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
+    curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_Linux_x86_64.tar.gz"
+
+    tar -xf /tmp/lazygit.tar.gz -C /tmp
+    sudo install /tmp/lazygit -D -t /usr/local/bin/
+    rm -r /tmp/lazygit.tar.gz /tmp/lazygit
+  else
+    log_info "Lazygit alread installed"
+  fi
+elif [[ "$platform" == "darwin" ]]; then
+  log_info "Install using homebrew"
+  brew install lazygit
 fi
 
 # Install Neovim (nvim)
-log_header "Install Neovim"
-curl -Lo /tmp/nvim-linux64.tar.gz $nvim_download_url
-sudo rm -rf /opt/nvim
-sudo tar -C /opt -xzf /tmp/nvim-linux64.tar.gz
-rm /tmp/nvim-linux64.tar.gz
+log_header "Install neovim"
+if [[ "$platform" == "linux" ]]; then 
+  log_info "Install from source"
+  curl -Lo /tmp/nvim-linux64.tar.gz $nvim_download_url
+  sudo rm -rf /opt/nvim
+  sudo tar -C /opt -xzf /tmp/nvim-linux64.tar.gz
+  rm /tmp/nvim-linux64.tar.gz
 
-log_info "Update alternatives, set nvim as default"
-sudo update-alternatives --install $(which vim) vim $(which nvim) 1
-sudo update-alternatives --set vim $(which nvim)
+  log_info "Update alternatives, set nvim as default"
+  sudo update-alternatives --install $(which vim) vim $(which nvim) 1
+  sudo update-alternatives --set vim $(which nvim)
+elif [[ "$platform" == "darwin" ]]; then
+  log_info "Install using homebrew"
+  brew install neovim
+fi
 
 # Run the new shell
 log_header "Done! Start shell"
