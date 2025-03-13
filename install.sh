@@ -54,6 +54,8 @@ if [ "$platform" = "darwin" ]; then
   if [ -z "$(which brew)" ]; then
     log_info "Install homebrew"
     /bin/bash -c "$(curl -fsSL $homebrew_install_script)"
+    cp ./docs/examples/.zshrc.local ~/
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc.local
   else
     log_info "Update homebrew"
     brew update
