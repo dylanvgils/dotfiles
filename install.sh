@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 #
 # Variables
 #
@@ -9,7 +9,7 @@ config_dir="$HOME/.config"
 
 homebrew_install_script="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 omzsh_install_script="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
-nvim_download_url="https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz"
+nvim_download_url="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
 
 #
 # Functions
@@ -33,11 +33,11 @@ create_dir() {
 #
 log_header "Start dotfiles installation"
 log_info "Detecting platform..."
-platform="unkown"
+platform="unknown"
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
+if [ "$(uname)" = "Linux" ]; then
   platform="linux"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
+elif [ "$(uname)" = "Darwin" ]; then
   platform="darwin"
 else
   log_info "Platform '$OSTYPE' not supported"
@@ -47,7 +47,7 @@ fi
 log_info "Platform '$platform' detected"
 
 # Prepare system
-if [[ "$platform" == "darwin" ]]; then
+if [ "$platform" = "darwin" ]; then
   log_header "Prepare system"
 
   # Ensure homebrew is installed
@@ -66,7 +66,7 @@ create_dir "$HOME/.local/share"
 
 # Update and install required packages
 log_header "Install required packages"
-if [[ "$platform" == "linux" ]]; then 
+if [ "$platform" = "linux" ]; then
   log_header "Update package list"
   sudo apt update
 
@@ -82,7 +82,7 @@ if [[ "$platform" == "linux" ]]; then
     log_info "Chaging default shell to zsh for $USER"
     chsh -s $(echo $zsh_location)
   fi
-elif [[ "$platform" == "darwin" ]]; then
+elif [ "$platform" = "darwin" ]; then
   log_info "Install using homebrew (git stow)"
   brew install git stow
 fi
@@ -131,10 +131,10 @@ make init
 
 # Install tmux
 log_header "Install tmux"
-if [[ "$platform" == "linux" ]]; then 
+if [ "$platform" = "linux" ]; then
   log_info "Install using aptitude"
   sudo apt install -y tmux
-elif [[ "$platform" == "darwin" ]]; then
+elif [ "$platform" = "darwin" ]; then
   log_info "Install using homebrew"
   brew install tmux
 fi
@@ -145,7 +145,7 @@ $config_dir/tmux/plugins/tpm/bin/install_plugins
 
 # Install lazygit
 log_header "Install lazygit"
-if [[ "$platform" == "linux" ]]; then 
+if [ "$platform" = "linux" ]; then
   log_info "Install from source"
 
   if [ -z "$(which lazygit)" ]; then
@@ -158,14 +158,14 @@ if [[ "$platform" == "linux" ]]; then
   else
     log_info "Lazygit alread installed"
   fi
-elif [[ "$platform" == "darwin" ]]; then
+elif [ "$platform" = "darwin" ]; then
   log_info "Install using homebrew"
   brew install lazygit
 fi
 
 # Install Neovim (nvim)
 log_header "Install neovim"
-if [[ "$platform" == "linux" ]]; then 
+if [ "$platform" = "linux" ]; then
   log_info "Install from source"
   curl -Lo /tmp/nvim-linux64.tar.gz $nvim_download_url
   sudo rm -rf /opt/nvim
@@ -175,7 +175,7 @@ if [[ "$platform" == "linux" ]]; then
   log_info "Update alternatives, set nvim as default"
   sudo update-alternatives --install $(which vim) vim $(which nvim) 1
   sudo update-alternatives --set vim $(which nvim)
-elif [[ "$platform" == "darwin" ]]; then
+elif [ "$platform" = "darwin" ]; then
   log_info "Install using homebrew"
   brew install neovim
 fi
