@@ -1,5 +1,9 @@
 # --- Aliases ---
 
+# Fzf aliases
+alias fcd="cd \$(fd --type d | fzf)"
+alias fvi="nvim \$(fd --type f --hidden | fzf --preview='fzf-preview.sh {}' --preview-window=right:60%)"
+
 # Source reload
 alias reload.zsh="source $HOME/.zshrc"
 alias reload.env="source $HOME/.zshenv"
@@ -21,5 +25,5 @@ function git {
 # ls
 alias ll="ls -Alh"
 
-# Source optional aliases 
+# Source optional aliases
 include ~/.aliases.local
