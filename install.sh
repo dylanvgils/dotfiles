@@ -72,8 +72,8 @@ if [ "$platform" = "linux" ]; then
   log_header "Update package list"
   sudo apt update
 
-  log_info "Install using aptitude (zsh, make, stow, curl, zip, xsel, build-essential)"
-  sudo apt install -y git zsh make stow curl zip xsel build-essential
+  log_info "Install using aptitude (zsh, make, stow, curl, zip, xsel, fzf, build-essential)"
+  sudo apt install -y git zsh make stow curl zip xsel fzf build-essential
 
   # Make sure ZSH is the default shell
   log_header "Change shell to ZSH"
@@ -85,8 +85,8 @@ if [ "$platform" = "linux" ]; then
     chsh -s $(echo $zsh_location)
   fi
 elif [ "$platform" = "darwin" ]; then
-  log_info "Install using homebrew (git stow)"
-  brew install git stow
+  log_info "Install using homebrew (git, stow, fzf)"
+  brew install git stow fzf
 fi
 
 # Install oh-my-zsh

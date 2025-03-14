@@ -62,7 +62,7 @@ ZSH_THEME="dracula"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions zsh-nvm)
+plugins=(git fzf zsh-autosuggestions zsh-nvm)
 
 # Load the shell functions, this intoduces the include function,
 # which can be used to source option files, for example the local
