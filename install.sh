@@ -69,6 +69,11 @@ create_dir "$HOME/.local/share"
 # Update and install required packages
 log_header "Install required packages"
 if [ "$platform" = "linux" ]; then
+  if [ -z "$(which apt)" ]; then
+    log_info "Aptitute is not installed, exiting install script."
+    exit 0
+  fi
+
   log_header "Update package list"
   sudo apt update
 
