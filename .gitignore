@@ -11,11 +11,13 @@
 !**/.config/tmux/plugins/
 **/.config/tmux/plugins/*
 !**/.config/tmux/plugins/tpm/
-
 !**/.config/tmux/tmux.config
 
 # Allow Neovim config
 !**/.config/nvim/
+
+# Allow Wezterm config
+!**/.config/wezterm/
 
 # Ignore vim except pack
 **/.vim/*
