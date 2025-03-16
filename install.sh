@@ -90,8 +90,9 @@ if [ "$platform" = "linux" ]; then
     chsh -s $(echo $zsh_location)
   fi
 elif [ "$platform" = "darwin" ]; then
-  log_info "Install using homebrew (git, stow, fd, fzf, bat)"
+  log_info "Install using homebrew (git, stow, fd, fzf, bat, wezterm)"
   brew install git stow fd fzf bat
+  brew install --cask wezterm
 fi
 
 # Install oh-my-zsh
