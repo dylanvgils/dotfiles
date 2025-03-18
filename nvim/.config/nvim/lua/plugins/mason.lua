@@ -6,7 +6,6 @@ return {
       "neovim/nvim-lspconfig",
       "WhoIsSethDaniel/mason-tool-installer.nvim",
     },
-    opts = { ensure_installed = { "prettier" } },
     config = function()
       require("mason").setup({
         ui = {
