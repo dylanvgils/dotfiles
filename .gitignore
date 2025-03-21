@@ -15,6 +15,7 @@
 
 # Allow Neovim config
 !**/.config/nvim/
+**/.config/nvim/spell
 
 # Allow Wezterm config
 !**/.config/wezterm/
