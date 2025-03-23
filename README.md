@@ -11,7 +11,9 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/dylanvgils/dotfiles/main/i
 ```
 
 ## 1. Prerequisites
+
 Make sure the following packages are installed on the system:
+
 - [git](https://git-scm.com/)
 - [zsh](https://www.zsh.org/)
 - [make](https://www.gnu.org/software/make/)
@@ -19,6 +21,7 @@ Make sure the following packages are installed on the system:
 - [oh-my-zsh](https://ohmyz.sh/)
 
 For example, run the following commands to install the packages:
+
 ```sh
 # Ubuntu (or other distros using Aptitude)
 sudo apt-get update && sudo apt-get install git zsh make stow
@@ -30,9 +33,11 @@ sudo dnf install git zsh make stow
 For installing `oh-my-zsh`, use the script listed on their [website](https://ohmyz.sh/#install).
 
 ## 2. Installing
+
 This section describes how the dotfiles can be installed in your home directory, `stow` and `make` are the tools to make this as easy as possible.
 
 ## 2.1 Clone the repository
+
 This first step is cloning this repostory to your system, use the following commands:
 
 ```sh
@@ -47,6 +52,7 @@ git clone git@github.com:dylanvgils/dotfiles.git
 ```
 
 ## 2.2 Symlink the configuration files
+
 Once the repository is cloned to the system, `make` can be used to symlink the configuration in the repository to the home directory.
 
 > **NOTE:** existing files are not overridden, which should be solved first. Either delete or move the file out of the home directory.
@@ -65,6 +71,7 @@ source ~/.zshenv && source ~/.zshrc
 ```
 
 ## 2.3 Update the configuration to the latest version
+
 To update the dotfiles to the latest version execute the following commands:
 
 ```sh
@@ -82,6 +89,7 @@ reload.env && reload.zsh
 ```
 
 ## 2.4 Uninstall the dotfiles from the system
+
 The `Makefile` also contains a target to remove all the symlinks fro the home directory. To Uninstall the shell configuration execute the following commands:
 
 > **NOTE:** The easiest way to make the changes affective is to logout an back in again. This will reload the entire shell configuration.
@@ -95,9 +103,11 @@ make delete
 ```
 
 ## 3. Managing submodules
+
 Git submodules are used to manage shell dependencies. This section describes how submodules can be added, updated or removed from the repository.
 
 ### 3.1 Add submodule
+
 Let say that we want to install the `bar` plugin in the `.vim` directory, using Vim 8's package feature:
 
 ```bash
@@ -115,6 +125,7 @@ reload.env && reload.zsh
 ```
 
 ### 3.2 Removing submodule
+
 Once a module is obsolete or is not used anymore, use the following commands to remove submodule `bar`:
 
 ```bash
@@ -132,6 +143,7 @@ rm -r .git/modules/vim/.vim/pack/plugins/start/bar
 ```
 
 ### 3.3 Update submodule
+
 Once in a while submodules have to be updated, the following commands can be used to update the module `bar`:
 
 > **NOTE:** git submodule update will not commit the changes to the repository. Make sure that the changes are committed to the repository when you are done updating.
@@ -169,6 +181,7 @@ For the `.aliases`, `.completion`, `.zshrc` and `.zshenv` files a local version 
 - [.zshenv.local](docs/examples/.zshenv.local)
 
 ## Known issues
+
 The `docs` folder contains a [issues.md](docs/issues.md) file, this file describes the known issues in the repository.
 
 ---
