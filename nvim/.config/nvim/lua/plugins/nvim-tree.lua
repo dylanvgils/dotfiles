@@ -8,7 +8,7 @@ return {
       { "<leader>e", ":NvimTreeToggle<cr>", desc = "Nvim Tree Toggle" },
     },
     config = function()
-      require("nvim-tree").setup()
+      require("nvim-tree").setup({ view = { adaptive_size = true } })
     end,
   },
 }
