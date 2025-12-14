@@ -3,7 +3,22 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        tsserver = {},
+        vtsls = {
+          settings = {
+            javascript = {
+              preferences = {
+                importModuleSpecifier = "shortest",
+                importModuleSpecifierEnding = "auto",
+              },
+            },
+            typescript = {
+              preferences = {
+                importModuleSpecifier = "shortest",
+                importModuleSpecifierEnding = "auto",
+              },
+            },
+          },
+        },
         cssls = {
           settings = {
             css = { validate = true },
@@ -11,6 +26,12 @@ return {
             less = { validate = true },
           },
         },
+        eslint = {
+          format = true,
+          workingDirectories = { mode = "auto" },
+          codeActionOnSave = { enable = true, mode = "all" },
+        },
+        tsserver = { enabled = false },
       },
     },
   },
