@@ -11,10 +11,19 @@ config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
 config.window_background_opacity = 0.82
 config.macos_window_background_blur = 20
 config.window_padding = {
-	left = "6px",
-	right = "6px",
-	top = "6px",
-	bottom = "6px",
+  left = "6px",
+  right = "6px",
+  top = "6px",
+  bottom = "6px",
+}
+
+-- Key bindings
+config.keys = {
+  {
+    key = "w",
+    mods = "CMD",
+    action = wezterm.action.CloseCurrentPane({ confirm = false }),
+  },
 }
 
 return config
