@@ -16,8 +16,9 @@ export XDG_CACHE_HOME="$HOME/.cache"
 # NVM directory
 export NVM_DIR="$XDG_DATA_HOME/nvm"
 
-# Nvim
+# Path
 export PATH="$PATH:/opt/nvim-linux64/bin"
+export PATH="$PATH:$HOME/.local/scripts"
 
 # Ssh agent variables
 export SSH_ENV="$HOME/.ssh/environment"

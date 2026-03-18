@@ -2,8 +2,12 @@
 
 # Reload auto completion
 # http://zsh.sourceforge.net/Doc/Release/Completion-System.html
-#
-#     autoload -U compinit && compinit
+
+# Include custom script completion in fpath
+fpath+=($HOME/.local/scripts)
 
 # Include local completions
 include ~/.completion.local
+
+# Initialize autocomplete
+autoload -U compinit && compinit

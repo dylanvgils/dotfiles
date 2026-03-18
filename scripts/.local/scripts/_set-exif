@@ -1,0 +1,27 @@
+#compdef set-exif
+
+_set-exif() {
+  local -a opts
+
+  opts=(
+    # Metadata fields
+    '--author[Artist, XPAuthor, XMP Creator]:author name'
+    '--description[ImageDescription, XMP Description, Title]:description'
+    '--keywords[Comma-separated keywords (IPTC, XMP, XP)]:keywords (comma-separated)'
+    '--comment[EXIF UserComment, IPTC Caption, XPComment]:comment'
+    '--comment-date[Set EXIF UserComment, IPTC Caption-Abstract, XPComment to DateTimeOriginal (e.g. "15 juni 2024")]'
+    '--locale[Locale for --comment-date (default\: nl_NL.UTF-8)]:locale:(nl_NL.UTF-8 en_US.UTF-8 en_GB.UTF-8 de_DE.UTF-8 fr_FR.UTF-8)'
+    '--date-fmt[strftime format for --comment-date (default\: %e %B %Y)]:date format'
+
+    # Behaviour
+    '--no-backup[Overwrite original without creating FILE_original backup]'
+    '--dry-run[Print the exiftool command without executing it]'
+    '(-h --help)'{-h,--help}'[Show help]'
+  )
+
+  _arguments -s \
+    $opts \
+    '*:image file:_files -g "*.jpg *.jpeg *.JPG *.JPEG *.tif *.tiff *.png *.PNG"'
+}
+
+_set-exif "$@"

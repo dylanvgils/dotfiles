@@ -1,0 +1,218 @@
+#!/usr/bin/env bash
+# set-exif — Write authorship & descriptive metadata to image files via exiftool.
+#
+# Each flag writes to all relevant tag families in one pass so the value shows up
+# consistently across tools and platforms:
+#
+#   --author       -> EXIF:Artist, XMP-dc:Creator, IPTC:By-line, XPAuthor
+#   --description  -> EXIF:ImageDescription, XMP-dc:Description, XMP-dc:Title
+#   --keywords     -> IPTC:Keywords, XMP-dc:Subject, XPKeywords
+#   --comment      -> EXIF:UserComment, XMP-dc:Description, IPTC:Caption-Abstract
+#   --comment-date -> EXIF UserComment, IPTC Caption-Abstract, XPComment derived from
+#                     DateTimeOriginal (locale-aware)
+#
+# Requires: exiftool — https://exiftool.org
+#   macOS:  brew install exiftool
+#   Ubuntu: sudo apt install libimage-exiftool-perl
+#
+# Usage:
+#   ./set-exif --author "Dylan" --keywords "holiday,2025" --comment-date --no-backup *.jpg
+#   ./set-exif --help
+
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# Defaults
+# ---------------------------------------------------------------------------
+AUTHOR=""
+DESCRIPTION=""
+KEYWORDS=""
+COMMENT=""
+COMMENT_DATE=false
+LOCALE="nl_NL.UTF-8"
+DATE_FMT="%e %B %Y"
+BACKUP=true
+DRY_RUN=false
+FILES=()
+
+# ---------------------------------------------------------------------------
+# Usage
+# ---------------------------------------------------------------------------
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [OPTIONS] FILE [FILE...]
+
+Authorship & description fields:
+  --author       VALUE   Artist, XPAuthor, XMP Creator
+  --description  VALUE   ImageDescription, XMP Description, Title
+  --keywords     VALUE   Comma-separated -> IPTC Keywords, XMP Subject, XPKeywords
+  --comment      VALUE   EXIF UserComment, IPTC Caption-Abstract, XPComment
+  --comment-date         Set EXIF UserComment, IPTC Caption-Abstract, XPComment
+                         to DateTimeOriginal (e.g. "15 juni 2024")
+  --locale       VALUE   Locale for --comment-date (default: nl_NL.UTF-8)
+  --date-fmt     VALUE   strftime format for --comment-date (default: "%e %B %Y")
+
+Behaviour:
+  --no-backup            Overwrite original (skip FILE_original backup)
+  --dry-run              Print the exiftool command without executing it
+  -h, --help             Show this help
+EOF
+  exit 0
+}
+
+# ---------------------------------------------------------------------------
+# Argument parsing
+# ---------------------------------------------------------------------------
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+  -h | --help) usage ;;
+  --author)
+    AUTHOR="$2"
+    shift 2
+    ;;
+  --description)
+    DESCRIPTION="$2"
+    shift 2
+    ;;
+  --keywords)
+    KEYWORDS="$2"
+    shift 2
+    ;;
+  --comment)
+    COMMENT="$2"
+    shift 2
+    ;;
+  --comment-date)
+    COMMENT_DATE=true
+    shift
+    ;;
+  --locale)
+    LOCALE="$2"
+    shift 2
+    ;;
+  --date-fmt)
+    DATE_FMT="$2"
+    shift 2
+    ;;
+  --no-backup)
+    BACKUP=false
+    shift
+    ;;
+  --dry-run)
+    DRY_RUN=true
+    shift
+    ;;
+  -*)
+    echo "Unknown option: $1" >&2
+    exit 1
+    ;;
+  *)
+    FILES+=("$1")
+    shift
+    ;;
+  esac
+done
+
+# ---------------------------------------------------------------------------
+# Verify exiftool is installed
+# ---------------------------------------------------------------------------
+if ! command -v exiftool &>/dev/null; then
+  echo "Error: exiftool is not installed." >&2
+  echo "  macOS:  brew install exiftool" >&2
+  echo "  Ubuntu: sudo apt install libimage-exiftool-perl" >&2
+  exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Build exiftool argument list
+# ---------------------------------------------------------------------------
+ARGS=()
+
+# --- Author ---
+if [[ -n "$AUTHOR" ]]; then
+  ARGS+=(
+    "-EXIF:Artist=$AUTHOR"
+    "-XPAuthor=$AUTHOR"
+    "-XMP-dc:Creator=$AUTHOR"
+  )
+fi
+
+# --- Description ---
+if [[ -n "$DESCRIPTION" ]]; then
+  ARGS+=(
+    "-EXIF:ImageDescription=$DESCRIPTION"
+    "-XMP-dc:Description=$DESCRIPTION"
+    "-XMP-dc:Title=$DESCRIPTION"
+  )
+fi
+
+# --- Keywords ---
+if [[ -n "$KEYWORDS" ]]; then
+  IFS=',' read -ra KW_ARRAY <<<"$KEYWORDS"
+  for kw in "${KW_ARRAY[@]}"; do
+    kw="${kw#"${kw%%[![:space:]]*}"}" # trim leading whitespace
+    kw="${kw%"${kw##*[![:space:]]}"}" # trim trailing whitespace
+    [[ -z "$kw" ]] && continue
+    ARGS+=(
+      "-IPTC:Keywords+=$kw"
+      "-XMP-dc:Subject+=$kw"
+    )
+  done
+  XP_KW="${KEYWORDS//,/;}"
+  ARGS+=("-XPKeywords=$XP_KW")
+fi
+
+# --- Comment (literal) ---
+if [[ -n "$COMMENT" ]]; then
+  ARGS+=(
+    "-EXIF:UserComment=$COMMENT"
+    "-IPTC:Caption-Abstract=$COMMENT"
+    "-XPComment=$COMMENT"
+  )
+fi
+
+# --- Backup / overwrite ---
+[[ "$BACKUP" == false ]] && ARGS+=("-overwrite_original")
+
+# ---------------------------------------------------------------------------
+# Execute
+# ---------------------------------------------------------------------------
+if [[ ${#ARGS[@]} -eq 0 ]] && [[ "$COMMENT_DATE" == false ]]; then
+  echo "Warning: no fields specified — nothing to do." >&2
+  echo "Run with --help for available options." >&2
+  exit 0
+fi
+
+if [[ "$DRY_RUN" == true ]]; then
+  echo "[dry-run] Would run:"
+  if [[ ${#ARGS[@]} -gt 0 ]]; then
+    printf '  %s\n' "exiftool" "${ARGS[@]}" "${FILES[@]}"
+  fi
+  if [[ "$COMMENT_DATE" == true ]]; then
+    printf '  %s\n' "LC_TIME=$LOCALE exiftool -EXIF:UserComment<\${DateTimeOriginal} -XPComment<\${DateTimeOriginal} -IPTC:Caption-Abstract<\${DateTimeOriginal} -d \"$DATE_FMT\"" "${FILES[@]}"
+  fi
+  exit 0
+fi
+
+echo "Writing metadata to ${#FILES[@]} file(s)..."
+
+if [[ ${#ARGS[@]} -gt 0 ]]; then
+  exiftool "${ARGS[@]}" "${FILES[@]}"
+fi
+
+# --comment-date runs as a separate exiftool call because it needs -d and LC_TIME
+# Skipped if --comment is set, as --comment takes precedence
+if [[ "$COMMENT_DATE" == true ]]; then
+  if [[ -n "$COMMENT" ]]; then
+    echo -e "\nWarning: --comment and --comment-date both set — --comment takes precedence, skipping --comment-date." >&2
+  else
+    LC_TIME="$LOCALE" exiftool \
+      "-EXIF:UserComment<\${DateTimeOriginal}" \
+      "-XPComment<\${DateTimeOriginal}" \
+      "-IPTC:Caption-Abstract<\${DateTimeOriginal}" \
+      -d "$DATE_FMT" \
+      "${FILES[@]}" >/dev/null
+  fi
+fi
+
+[[ "$BACKUP" == true ]] && echo -e "\nTip: originals saved as FILE_original — use --no-backup to skip"

@@ -29,6 +29,7 @@
 **/.local/*
 **/.local/*/
 !**/.local/share/zsh/
+!**/.local/scripts/
 
 # Ignore node modules
 **/node_modules/

@@ -5,6 +5,7 @@ all:
 	stow --target=$$HOME --restow nvim
 	stow --target=$$HOME --restow wezterm
 	stow --target=$$HOME --restow zsh
+	stow --target=$$HOME --restow scripts
 
 # Init initializes the submodules and (re)creates the symlinks in th ehome directory
 init: submodule.init all
