@@ -6,6 +6,9 @@ source $HOME/.functions
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
+# Terminal color 
+export COLORTERM="truecolor"
+
 # XDG - set defaults as they may not be set
 # See https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 # and https://wiki.archlinux.org/title/XDG_Base_Directory#Support
