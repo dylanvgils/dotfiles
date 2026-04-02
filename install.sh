@@ -55,7 +55,7 @@ if [ "$platform" = "darwin" ]; then
     log_info "Install homebrew"
     /bin/bash -c "$(curl -fsSL $homebrew_install_script)"
     cp ./docs/examples/.zshrc.local ~/
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc.local
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>~/.zshrc.local
   else
     log_info "Update homebrew"
     brew update
@@ -174,15 +174,21 @@ fi
 # Install Neovim (nvim)
 log_header "Install neovim"
 if [ "$platform" = "linux" ]; then
+  nvim_install_dir="/opt/nvim"
+  nvim_bin="$nvim_install_dir/bin/nvim"
+  nvim_tmp="/tmp/nvim-linux64.tar.gz"
+
   log_info "Install from source"
-  curl -Lo /tmp/nvim-linux64.tar.gz $nvim_download_url
-  sudo rm -rf /opt/nvim
-  sudo tar -C /opt -xzf /tmp/nvim-linux64.tar.gz
-  rm /tmp/nvim-linux64.tar.gz
+  curl -Lo "$nvim_tmp" "$nvim_download_url"
+  sudo rm -rf "$nvim_install_dir"
+  sudo mkdir -p "$nvim_install_dir"
+  sudo tar -C "$nvim_install_dir" -xzf "$nvim_tmp" --strip-components=1
+  rm "$nvim_tmp"
+  sudo ln -sf "$nvim_bin" /usr/local/bin/nvim
 
   log_info "Update alternatives, set nvim as default"
-  sudo update-alternatives --install $(which vim) vim $(which nvim) 1
-  sudo update-alternatives --set vim $(which nvim)
+  sudo update-alternatives --install /usr/bin/vim vim "$nvim_bin" 1
+  sudo update-alternatives --set vim "$nvim_bin"
 elif [ "$platform" = "darwin" ]; then
   log_info "Install using homebrew"
   brew install neovim
