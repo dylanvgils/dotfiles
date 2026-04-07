@@ -18,6 +18,7 @@ export XDG_CACHE_HOME="$HOME/.cache"
 
 # NVM directory
 export NVM_DIR="$XDG_DATA_HOME/nvm"
+export NVM_COMPLETION=true
 
 # Path
 export PATH="$PATH:$HOME/.local/scripts"
