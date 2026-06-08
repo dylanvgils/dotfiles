@@ -244,11 +244,7 @@ make init
 
 # Install tmux
 log_header "Install tmux"
-if [ "$platform" = "linux" ]; then
-  install_tmux_linux
-elif [ "$platform" = "darwin" ]; then
-  install_tmux_darwin
-fi
+"install_tmux_${platform}"
 
 log_info "Install tmux plugins"
 export TMUX_PLUGIN_MANAGER_PATH="$config_dir/tmux/plugins"
@@ -256,19 +252,11 @@ export TMUX_PLUGIN_MANAGER_PATH="$config_dir/tmux/plugins"
 
 # Install lazygit
 log_header "Install lazygit"
-if [ "$platform" = "linux" ]; then
-  install_lazygit_linux
-elif [ "$platform" = "darwin" ]; then
-  install_lazygit_darwin
-fi
+"install_lazygit_${platform}"
 
 # Install Neovim (nvim)
 log_header "Install neovim"
-if [ "$platform" = "linux" ]; then
-  install_neovim_linux
-elif [ "$platform" = "darwin" ]; then
-  install_neovim_darwin
-fi
+"install_neovim_${platform}"
 
 # Run the new shell
 log_header "Done! Start shell"
