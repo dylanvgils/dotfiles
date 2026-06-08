@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Variables
 #
@@ -15,7 +15,7 @@ nvim_download_url="https://github.com/neovim/neovim/releases/latest/download/nvi
 # Functions
 #
 log_info() {
-  echo "$1"
+  echo -e "$1"
 }
 
 log_header() {
@@ -26,6 +26,14 @@ create_dir() {
   if [ ! -d "$1" ]; then
     mkdir -p $1
   fi
+}
+
+brew_has() {
+  if brew list "$@" &>/dev/null; then
+    log_info "$* already installed, skipping"
+    return 0
+  fi
+  return 1
 }
 
 #
@@ -77,8 +85,23 @@ if [ "$platform" = "linux" ]; then
   log_header "Update package list"
   sudo apt update
 
-  log_info "Install using aptitude (zsh, make, stow, curl, zip, xsel, fd, fzf, bat, ripgrep, fd-find, build-essential)"
-  sudo apt install -y git zsh make stow curl zip xsel fd-find fzf bat ripgrep fd-find build-essential
+  apt_packages=(
+    git
+    zsh
+    make
+    stow
+    curl
+    zip
+    xsel
+    fd-find
+    fzf
+    bat
+    ripgrep
+    build-essential
+  )
+
+  log_info "Install using aptitude (${apt_packages[*]})"
+  sudo apt install -y "${apt_packages[@]}"
 
   # Make sure ZSH is the default shell
   log_header "Change shell to ZSH"
@@ -90,9 +113,20 @@ if [ "$platform" = "linux" ]; then
     chsh -s $(echo $zsh_location)
   fi
 elif [ "$platform" = "darwin" ]; then
-  log_info "Install using homebrew (git, stow, ripgrep, fd, fzf, bat, wezterm)"
-  brew install git stow ripgrep fd fzf bat
-  brew install --cask wezterm
+  brew_packages=(
+    git
+    stow
+    ripgrep
+    fd
+    fzf
+    bat
+  )
+
+  log_info "Install using homebrew (${brew_packages[*]} wezterm)"
+  for pkg in "${brew_packages[@]}"; do
+    brew_has "$pkg" || brew install "$pkg"
+  done
+  brew_has --cask wezterm || brew install --cask wezterm
 fi
 
 # Install oh-my-zsh
@@ -144,7 +178,7 @@ if [ "$platform" = "linux" ]; then
   sudo apt install -y tmux
 elif [ "$platform" = "darwin" ]; then
   log_info "Install using homebrew"
-  brew install tmux
+  brew_has tmux || brew install tmux
 fi
 
 log_info "Install tmux plugins"
@@ -168,7 +202,7 @@ if [ "$platform" = "linux" ]; then
   fi
 elif [ "$platform" = "darwin" ]; then
   log_info "Install using homebrew"
-  brew install lazygit
+  brew_has lazygit || brew install lazygit
 fi
 
 # Install Neovim (nvim)
@@ -191,7 +225,7 @@ if [ "$platform" = "linux" ]; then
   sudo update-alternatives --set vim "$nvim_bin"
 elif [ "$platform" = "darwin" ]; then
   log_info "Install using homebrew"
-  brew install neovim
+  brew_has neovim || brew install neovim
 fi
 
 # Run the new shell
