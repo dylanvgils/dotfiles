@@ -77,8 +77,8 @@ if [ "$platform" = "linux" ]; then
   log_header "Update package list"
   sudo apt update
 
-  log_info "Install using aptitude (zsh, make, stow, curl, zip, xsel, fd, fzf, bat, build-essential)"
-  sudo apt install -y git zsh make stow curl zip xsel fd-find fzf bat build-essential
+  log_info "Install using aptitude (zsh, make, stow, curl, zip, xsel, fd, fzf, bat, ripgrep, fd-find, build-essential)"
+  sudo apt install -y git zsh make stow curl zip xsel fd-find fzf bat ripgrep fd-find build-essential
 
   # Make sure ZSH is the default shell
   log_header "Change shell to ZSH"
@@ -90,8 +90,8 @@ if [ "$platform" = "linux" ]; then
     chsh -s $(echo $zsh_location)
   fi
 elif [ "$platform" = "darwin" ]; then
-  log_info "Install using homebrew (git, stow, fd, fzf, bat, wezterm)"
-  brew install git stow fd fzf bat
+  log_info "Install using homebrew (git, stow, ripgrep, fd, fzf, bat, wezterm)"
+  brew install git stow ripgrep fd fzf bat
   brew install --cask wezterm
 fi
 
