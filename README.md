@@ -7,7 +7,7 @@ This repository contains my shell configuration files (a.k.a dotfiles). It can b
 The easiest way to install the dotfiles is to use the install script, which can be executed with the following command:
 
 ```sh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/dylanvgils/dotfiles/main/install.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/dylanvgils/dotfiles/main/install.sh)"
 ```
 
 ## 1. Prerequisites
