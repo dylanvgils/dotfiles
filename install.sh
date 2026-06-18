@@ -70,6 +70,12 @@ install_packages_linux() {
 
   log_info "Install using aptitude (${apt_packages[*]})"
   sudo apt install -y "${apt_packages[@]}"
+
+  # fd-find installs its binary as `fdfind` on Debian/Ubuntu since `fd` was already taken
+  if [ -z "$(which fd)" ] && [ -n "$(which fdfind)" ]; then
+    log_info "Symlinking fdfind to fd"
+    sudo ln -sf "$(which fdfind)" /usr/local/bin/fd
+  fi
 }
 
 set_default_shell_linux() {
@@ -83,6 +89,16 @@ set_default_shell_linux() {
     log_info "Chaging default shell to zsh for $USER"
     chsh -s "$zsh_location"
   fi
+}
+
+setup_packages_linux() {
+  if [ -z "$(which apt)" ]; then
+    log_info "Aptitute is not installed, exiting install script."
+    exit 0
+  fi
+
+  install_packages_linux
+  set_default_shell_linux
 }
 
 install_packages_darwin() {
@@ -101,6 +117,10 @@ install_packages_darwin() {
     brew_has "$pkg" || brew install "$pkg"
   done
   brew_has --cask wezterm || brew install --cask wezterm
+}
+
+setup_packages_darwin() {
+  install_packages_darwin
 }
 
 install_tmux_linux() {
@@ -188,17 +208,7 @@ create_dir "$HOME/.local/share"
 
 # Update and install required packages
 log_header "Install required packages"
-if [ "$platform" = "linux" ]; then
-  if [ -z "$(which apt)" ]; then
-    log_info "Aptitute is not installed, exiting install script."
-    exit 0
-  fi
-
-  install_packages_linux
-  set_default_shell_linux
-elif [ "$platform" = "darwin" ]; then
-  install_packages_darwin
-fi
+"setup_packages_${platform}"
 
 # Install oh-my-zsh
 log_header "Install oh-my-zsh"
