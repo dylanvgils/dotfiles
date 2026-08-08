@@ -41,6 +41,15 @@
 
 set -euo pipefail
 
+if ((BASH_VERSINFO[0] < 4)); then
+  echo "Error: this script requires Bash 4+ (found ${BASH_VERSION})." >&2
+  echo "  macOS ships Bash 3.2 at /bin/bash by default. Install a newer one:" >&2
+  echo "    brew install bash" >&2
+  echo "  then either put it earlier in PATH, or run explicitly:" >&2
+  echo "    \$(brew --prefix)/bin/bash $0 ..." >&2
+  exit 1
+fi
+
 # ---------------------------------------------------------------------------
 # Defaults
 # ---------------------------------------------------------------------------
