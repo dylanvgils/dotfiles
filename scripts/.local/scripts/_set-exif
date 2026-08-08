@@ -14,7 +14,7 @@ _set-exif() {
     '--date-fmt[strftime format for --comment-date (default\: %e %B %Y)]:date format'
 
     # Persistent tags
-    '--save[Write effective author/description/keywords/comment back to .taginfo]'
+    '--save[Write effective author/description/keywords/comment/comment-date back to .taginfo]'
     '--init-taginfo[Bootstrap .taginfo from metadata already embedded in the first FILE]'
     '--force[Allow --init-taginfo to overwrite an existing .taginfo]'
 

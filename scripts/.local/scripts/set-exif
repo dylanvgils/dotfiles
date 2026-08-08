@@ -13,15 +13,19 @@
 #
 # Persistent tags (.taginfo):
 #   The script looks for a ".taginfo" file in the directory of the first FILE
-#   argument and loads AUTHOR/DESCRIPTION/KEYWORDS/COMMENT from it. A CLI flag
-#   always overrides the stored value for --author/--description/--comment;
-#   --keywords is merged (union, de-duplicated) with stored keywords instead of
-#   replacing them. Pass --save to write the effective values back to .taginfo.
-#   Format is plain KEY="value" lines, safe to hand-edit:
+#   argument and loads AUTHOR/DESCRIPTION/KEYWORDS/COMMENT/COMMENT_DATE from it.
+#   A CLI flag always overrides the stored value for --author/--description/
+#   --comment; --keywords is merged (union, de-duplicated) with stored keywords
+#   instead of replacing them. A stored COMMENT_DATE="true" turns --comment-date
+#   on for future runs without passing the flag again; pass --comment on the CLI
+#   to override it for a single run (as already happens between the two flags).
+#   Pass --save to write the effective values back to .taginfo. Format is plain
+#   KEY="value" lines, safe to hand-edit:
 #     AUTHOR="Dylan"
 #     DESCRIPTION="Summer vacation"
 #     KEYWORDS="holiday,2025,family"
 #     COMMENT="Shot with X100V"
+#     COMMENT_DATE="true"
 #
 #   --init-taginfo reads AUTHOR/DESCRIPTION/KEYWORDS/COMMENT straight out of an
 #   already-tagged image's embedded metadata and writes the initial .taginfo,
@@ -85,10 +89,12 @@ Authorship & description fields:
   --date-fmt     VALUE   strftime format for --comment-date (default: "%e %B %Y")
 
 Persistent tags:
-  --save                 Write the effective author/description/keywords/comment
-                         back to .taginfo (in the first FILE's directory) for
-                         reuse on future runs. --keywords merges with .taginfo
-                         instead of replacing it; other fields override it.
+  --save                 Write the effective author/description/keywords/comment/
+                         comment-date back to .taginfo (in the first FILE's
+                         directory) for reuse on future runs. --keywords merges
+                         with .taginfo instead of replacing it; other fields
+                         override it. A stored comment-date stays on until a
+                         run passes --comment, which takes precedence.
   --init-taginfo         Bootstrap .taginfo from the first FILE's own embedded
                          metadata instead of the CLI flags. Standalone: reads
                          only, never writes to the image. Refuses to overwrite
@@ -147,6 +153,7 @@ save_taginfo() {
     [[ -n "$DESCRIPTION" ]] && printf 'DESCRIPTION="%s"\n' "$DESCRIPTION"
     [[ -n "$KEYWORDS" ]] && printf 'KEYWORDS="%s"\n' "$KEYWORDS"
     [[ -n "$COMMENT" ]] && printf 'COMMENT="%s"\n' "$COMMENT"
+    [[ "$COMMENT_DATE" == true ]] && printf 'COMMENT_DATE="true"\n'
   } >"$TAGINFO_PATH"
   return 0
 }
@@ -281,6 +288,7 @@ TI_AUTHOR=""
 TI_DESCRIPTION=""
 TI_KEYWORDS=""
 TI_COMMENT=""
+TI_COMMENT_DATE=false
 
 if [[ -f "$TAGINFO_PATH" ]]; then
   while IFS= read -r line || [[ -n "$line" ]]; do
@@ -291,6 +299,7 @@ if [[ -f "$TAGINFO_PATH" ]]; then
       DESCRIPTION) TI_DESCRIPTION="${BASH_REMATCH[2]}" ;;
       KEYWORDS) TI_KEYWORDS="${BASH_REMATCH[2]}" ;;
       COMMENT) TI_COMMENT="${BASH_REMATCH[2]}" ;;
+      COMMENT_DATE) [[ "${BASH_REMATCH[2]}" == true ]] && TI_COMMENT_DATE=true ;;
       esac
     fi
   done <"$TAGINFO_PATH"
@@ -300,6 +309,10 @@ fi
 AUTHOR="${AUTHOR:-$TI_AUTHOR}"
 DESCRIPTION="${DESCRIPTION:-$TI_DESCRIPTION}"
 COMMENT="${COMMENT:-$TI_COMMENT}"
+
+# --comment-date: CLI flag or a stored preference turns it on; --comment (CLI or
+# stored, handled above) still takes precedence over it further down.
+[[ "$TI_COMMENT_DATE" == true ]] && COMMENT_DATE=true
 
 # --keywords: merge (union, de-duplicated) with stored keywords instead of replacing them.
 if [[ -n "$TI_KEYWORDS" || -n "$KEYWORDS" ]]; then
@@ -371,7 +384,9 @@ if [[ "$DRY_RUN" == true ]]; then
   if [[ ${#ARGS[@]} -gt 0 ]]; then
     printf '  %s\n' "exiftool" "${ARGS[@]}" "${FILES[@]}"
   fi
-  if [[ "$COMMENT_DATE" == true ]]; then
+  if [[ "$COMMENT_DATE" == true && -n "$COMMENT" ]]; then
+    echo "Warning: --comment and --comment-date both set — --comment takes precedence, skipping --comment-date." >&2
+  elif [[ "$COMMENT_DATE" == true ]]; then
     DRY_OVERWRITE=""
     [[ "$BACKUP" == false ]] && DRY_OVERWRITE=" -overwrite_original"
     printf '  %s\n' "LC_TIME=$LOCALE exiftool -EXIF:UserComment<\${DateTimeOriginal} -XPComment<\${DateTimeOriginal} -IPTC:Caption-Abstract<\${DateTimeOriginal} -d \"$DATE_FMT\"$DRY_OVERWRITE" "${FILES[@]}"
@@ -382,6 +397,7 @@ if [[ "$DRY_RUN" == true ]]; then
     [[ -n "$DESCRIPTION" ]] && printf '  DESCRIPTION="%s"\n' "$DESCRIPTION"
     [[ -n "$KEYWORDS" ]] && printf '  KEYWORDS="%s"\n' "$KEYWORDS"
     [[ -n "$COMMENT" ]] && printf '  COMMENT="%s"\n' "$COMMENT"
+    [[ "$COMMENT_DATE" == true ]] && printf '  COMMENT_DATE="true"\n'
   fi
   exit 0
 fi
