@@ -18,7 +18,9 @@
 #   --comment; --keywords is merged (union, de-duplicated) with stored keywords
 #   instead of replacing them. A stored COMMENT_DATE="true" turns --comment-date
 #   on for future runs without passing the flag again; pass --comment on the CLI
-#   to override it for a single run (as already happens between the two flags).
+#   to override it for a single run. --comment and --comment-date are mutually
+#   exclusive when both are passed explicitly on the CLI in the same run — that
+#   errors out instead of silently picking one.
 #   Pass --save to write the effective values back to .taginfo. Format is plain
 #   KEY="value" lines, safe to hand-edit:
 #     AUTHOR="Dylan"
@@ -31,7 +33,11 @@
 #   already-tagged image's embedded metadata and writes the initial .taginfo,
 #   instead of retyping the CLI flags by hand. Standalone: it only reads and
 #   writes .taginfo, it never touches the image. Refuses to overwrite an
-#   existing .taginfo unless --force is also given.
+#   existing .taginfo unless --force is also given. A --comment-date passed
+#   alongside --init-taginfo is not read from metadata (there's no such tag) —
+#   it's persisted as-is from the CLI flag, same as a normal --save run. In that
+#   case COMMENT is left unread, since --comment-date writes into the very same
+#   tags and would otherwise scrape its own rendered date back in as COMMENT.
 #
 # Requires: exiftool — https://exiftool.org
 #   macOS:  brew install exiftool
@@ -84,7 +90,8 @@ Authorship & description fields:
   --keywords     VALUE   Comma-separated -> IPTC Keywords, XMP Subject, XPKeywords
   --comment      VALUE   EXIF UserComment, IPTC Caption-Abstract, XPComment
   --comment-date         Set EXIF UserComment, IPTC Caption-Abstract, XPComment
-                         to DateTimeOriginal (e.g. "15 juni 2024")
+                         to DateTimeOriginal (e.g. "15 juni 2024"). Mutually
+                         exclusive with --comment on the same run.
   --locale       VALUE   Locale for --comment-date (default: nl_NL.UTF-8)
   --date-fmt     VALUE   strftime format for --comment-date (default: "%e %B %Y")
 
@@ -99,6 +106,11 @@ Persistent tags:
                          metadata instead of the CLI flags. Standalone: reads
                          only, never writes to the image. Refuses to overwrite
                          an existing .taginfo unless --force is also given.
+                         --comment-date passed alongside it is persisted as-is
+                         (it's a preference flag, not something read from
+                         metadata) and COMMENT is left unread, since
+                         --comment-date writes into the same tags COMMENT would
+                         otherwise be scraped from.
   --force                Allow --init-taginfo to overwrite an existing .taginfo
 
 Behaviour:
@@ -223,6 +235,16 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# --comment and --comment-date are mutually exclusive when both are passed
+# explicitly on the CLI — that's a straight contradiction, not something to
+# silently resolve. This runs before the .taginfo merge below, so a CLI
+# --comment can still override a *stored* comment-date preference for a
+# single run without tripping this check.
+if [[ -n "$COMMENT" && "$COMMENT_DATE" == true ]]; then
+  echo "Error: --comment and --comment-date are mutually exclusive." >&2
+  exit 1
+fi
+
 # ---------------------------------------------------------------------------
 # Verify exiftool is installed
 # ---------------------------------------------------------------------------
@@ -253,13 +275,20 @@ if [[ "$INIT_TAGINFO" == true ]]; then
     exit 1
   fi
 
-  if [[ -n "$AUTHOR$DESCRIPTION$KEYWORDS$COMMENT" ]] || [[ "$COMMENT_DATE" == true ]]; then
+  if [[ -n "$AUTHOR$DESCRIPTION$KEYWORDS$COMMENT" ]]; then
     echo "Warning: --init-taginfo only reads from $SRC_FILE — other metadata flags are ignored." >&2
   fi
 
   AUTHOR="$(first_nonempty_tag "$SRC_FILE" EXIF:Artist XMP-dc:Creator IPTC:By-line XPAuthor)"
   DESCRIPTION="$(first_nonempty_tag "$SRC_FILE" EXIF:ImageDescription XMP-dc:Description XMP-dc:Title)"
-  COMMENT="$(first_nonempty_tag "$SRC_FILE" EXIF:UserComment IPTC:Caption-Abstract XPComment)"
+  # --comment-date writes into these same tags, so a file tagged that way would
+  # otherwise have its rendered date scraped back in as a frozen COMMENT — and a
+  # stored COMMENT always beats COMMENT_DATE, silently defeating the flag.
+  if [[ "$COMMENT_DATE" == true ]]; then
+    COMMENT=""
+  else
+    COMMENT="$(first_nonempty_tag "$SRC_FILE" EXIF:UserComment IPTC:Caption-Abstract XPComment)"
+  fi
   IPTC_KW="$(exiftool -s3 -sep ',' -IPTC:Keywords "$SRC_FILE" 2>/dev/null || true)"
   XMP_KW="$(exiftool -s3 -sep ',' -XMP-dc:Subject "$SRC_FILE" 2>/dev/null || true)"
   KEYWORDS="$(merge_keywords "$IPTC_KW" "$XMP_KW")"
@@ -270,6 +299,7 @@ if [[ "$INIT_TAGINFO" == true ]]; then
     [[ -n "$DESCRIPTION" ]] && printf '  DESCRIPTION="%s"\n' "$DESCRIPTION"
     [[ -n "$KEYWORDS" ]] && printf '  KEYWORDS="%s"\n' "$KEYWORDS"
     [[ -n "$COMMENT" ]] && printf '  COMMENT="%s"\n' "$COMMENT"
+    [[ "$COMMENT_DATE" == true ]] && printf '  COMMENT_DATE="true"\n'
     exit 0
   fi
 
@@ -385,7 +415,7 @@ if [[ "$DRY_RUN" == true ]]; then
     printf '  %s\n' "exiftool" "${ARGS[@]}" "${FILES[@]}"
   fi
   if [[ "$COMMENT_DATE" == true && -n "$COMMENT" ]]; then
-    echo "Warning: --comment and --comment-date both set — --comment takes precedence, skipping --comment-date." >&2
+    echo "Warning: comment-date is stored but --comment overrides it for this run — skipping --comment-date." >&2
   elif [[ "$COMMENT_DATE" == true ]]; then
     DRY_OVERWRITE=""
     [[ "$BACKUP" == false ]] && DRY_OVERWRITE=" -overwrite_original"
@@ -412,7 +442,7 @@ fi
 # Skipped if --comment is set, as --comment takes precedence
 if [[ "$COMMENT_DATE" == true ]]; then
   if [[ -n "$COMMENT" ]]; then
-    echo -e "\nWarning: --comment and --comment-date both set — --comment takes precedence, skipping --comment-date." >&2
+    echo -e "\nWarning: comment-date is stored but --comment overrides it for this run — skipping --comment-date." >&2
   else
     COMMENT_DATE_ARGS=(
       "-EXIF:UserComment<\${DateTimeOriginal}"
