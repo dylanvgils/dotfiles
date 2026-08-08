@@ -13,6 +13,11 @@ _set-exif() {
     '--locale[Locale for --comment-date (default\: nl_NL.UTF-8)]:locale:(nl_NL.UTF-8 en_US.UTF-8 en_GB.UTF-8 de_DE.UTF-8 fr_FR.UTF-8)'
     '--date-fmt[strftime format for --comment-date (default\: %e %B %Y)]:date format'
 
+    # Persistent tags
+    '--save[Write effective author/description/keywords/comment back to .taginfo]'
+    '--init-taginfo[Bootstrap .taginfo from metadata already embedded in the first FILE]'
+    '--force[Allow --init-taginfo to overwrite an existing .taginfo]'
+
     # Behaviour
     '--no-backup[Overwrite original without creating FILE_original backup]'
     '--dry-run[Print the exiftool command without executing it]'

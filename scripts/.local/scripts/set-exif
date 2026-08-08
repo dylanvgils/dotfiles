@@ -11,12 +11,32 @@
 #   --comment-date -> EXIF UserComment, IPTC Caption-Abstract, XPComment derived from
 #                     DateTimeOriginal (locale-aware)
 #
+# Persistent tags (.taginfo):
+#   The script looks for a ".taginfo" file in the directory of the first FILE
+#   argument and loads AUTHOR/DESCRIPTION/KEYWORDS/COMMENT from it. A CLI flag
+#   always overrides the stored value for --author/--description/--comment;
+#   --keywords is merged (union, de-duplicated) with stored keywords instead of
+#   replacing them. Pass --save to write the effective values back to .taginfo.
+#   Format is plain KEY="value" lines, safe to hand-edit:
+#     AUTHOR="Dylan"
+#     DESCRIPTION="Summer vacation"
+#     KEYWORDS="holiday,2025,family"
+#     COMMENT="Shot with X100V"
+#
+#   --init-taginfo reads AUTHOR/DESCRIPTION/KEYWORDS/COMMENT straight out of an
+#   already-tagged image's embedded metadata and writes the initial .taginfo,
+#   instead of retyping the CLI flags by hand. Standalone: it only reads and
+#   writes .taginfo, it never touches the image. Refuses to overwrite an
+#   existing .taginfo unless --force is also given.
+#
 # Requires: exiftool — https://exiftool.org
 #   macOS:  brew install exiftool
 #   Ubuntu: sudo apt install libimage-exiftool-perl
 #
 # Usage:
 #   ./set-exif --author "Dylan" --keywords "holiday,2025" --comment-date --no-backup *.jpg
+#   ./set-exif --keywords "extra" --save *.jpg   # merge in "extra" and persist it
+#   ./set-exif --init-taginfo already-tagged.jpg # bootstrap .taginfo from its metadata
 #   ./set-exif --help
 
 set -euo pipefail
@@ -33,6 +53,9 @@ LOCALE="nl_NL.UTF-8"
 DATE_FMT="%e %B %Y"
 BACKUP=true
 DRY_RUN=false
+SAVE=false
+INIT_TAGINFO=false
+FORCE=false
 FILES=()
 
 # ---------------------------------------------------------------------------
@@ -52,12 +75,71 @@ Authorship & description fields:
   --locale       VALUE   Locale for --comment-date (default: nl_NL.UTF-8)
   --date-fmt     VALUE   strftime format for --comment-date (default: "%e %B %Y")
 
+Persistent tags:
+  --save                 Write the effective author/description/keywords/comment
+                         back to .taginfo (in the first FILE's directory) for
+                         reuse on future runs. --keywords merges with .taginfo
+                         instead of replacing it; other fields override it.
+  --init-taginfo         Bootstrap .taginfo from the first FILE's own embedded
+                         metadata instead of the CLI flags. Standalone: reads
+                         only, never writes to the image. Refuses to overwrite
+                         an existing .taginfo unless --force is also given.
+  --force                Allow --init-taginfo to overwrite an existing .taginfo
+
 Behaviour:
   --no-backup            Overwrite original (skip FILE_original backup)
   --dry-run              Print the exiftool command without executing it
   -h, --help             Show this help
 EOF
   exit 0
+}
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+# Union + de-duplicate two comma-separated keyword lists.
+merge_keywords() {
+  local a="$1" b="$2" kw
+  local -A seen=()
+  local merged=()
+  IFS=',' read -ra combined <<<"${a:+$a,}$b"
+  for kw in "${combined[@]}"; do
+    kw="${kw#"${kw%%[![:space:]]*}"}" # trim leading whitespace
+    kw="${kw%"${kw##*[![:space:]]}"}" # trim trailing whitespace
+    [[ -z "$kw" ]] && continue
+    [[ -n "${seen[$kw]:-}" ]] && continue
+    seen[$kw]=1
+    merged+=("$kw")
+  done
+  (
+    IFS=,
+    echo "${merged[*]}"
+  )
+}
+
+# Read a file's tags in priority order, print the first non-empty value found.
+first_nonempty_tag() {
+  local file="$1" tag value
+  shift
+  for tag in "$@"; do
+    value="$(exiftool -s3 "-$tag" "$file" 2>/dev/null || true)"
+    if [[ -n "$value" ]]; then
+      printf '%s' "$value"
+      return 0
+    fi
+  done
+  return 0
+}
+
+save_taginfo() {
+  {
+    [[ -n "$AUTHOR" ]] && printf 'AUTHOR="%s"\n' "$AUTHOR"
+    [[ -n "$DESCRIPTION" ]] && printf 'DESCRIPTION="%s"\n' "$DESCRIPTION"
+    [[ -n "$KEYWORDS" ]] && printf 'KEYWORDS="%s"\n' "$KEYWORDS"
+    [[ -n "$COMMENT" ]] && printf 'COMMENT="%s"\n' "$COMMENT"
+  } >"$TAGINFO_PATH"
+  return 0
 }
 
 # ---------------------------------------------------------------------------
@@ -102,6 +184,18 @@ while [[ $# -gt 0 ]]; do
     DRY_RUN=true
     shift
     ;;
+  --save)
+    SAVE=true
+    shift
+    ;;
+  --init-taginfo)
+    INIT_TAGINFO=true
+    shift
+    ;;
+  --force)
+    FORCE=true
+    shift
+    ;;
   -*)
     echo "Unknown option: $1" >&2
     exit 1
@@ -121,6 +215,86 @@ if ! command -v exiftool &>/dev/null; then
   echo "  macOS:  brew install exiftool" >&2
   echo "  Ubuntu: sudo apt install libimage-exiftool-perl" >&2
   exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# --init-taginfo: bootstrap .taginfo from an image's own embedded metadata
+# ---------------------------------------------------------------------------
+if [[ "$INIT_TAGINFO" == true ]]; then
+  if [[ ${#FILES[@]} -eq 0 ]]; then
+    echo "Error: --init-taginfo requires at least one FILE to read metadata from." >&2
+    exit 1
+  fi
+
+  SRC_FILE="${FILES[0]}"
+  [[ ${#FILES[@]} -gt 1 ]] && echo "Note: reading metadata from $SRC_FILE only (first of ${#FILES[@]} files)." >&2
+
+  TAGINFO_DIR="$(dirname -- "$SRC_FILE")"
+  TAGINFO_PATH="$TAGINFO_DIR/.taginfo"
+
+  if [[ -f "$TAGINFO_PATH" ]] && [[ "$FORCE" == false ]]; then
+    echo "Error: $TAGINFO_PATH already exists. Remove it or pass --force to overwrite." >&2
+    exit 1
+  fi
+
+  if [[ -n "$AUTHOR$DESCRIPTION$KEYWORDS$COMMENT" ]] || [[ "$COMMENT_DATE" == true ]]; then
+    echo "Warning: --init-taginfo only reads from $SRC_FILE — other metadata flags are ignored." >&2
+  fi
+
+  AUTHOR="$(first_nonempty_tag "$SRC_FILE" EXIF:Artist XMP-dc:Creator IPTC:By-line XPAuthor)"
+  DESCRIPTION="$(first_nonempty_tag "$SRC_FILE" EXIF:ImageDescription XMP-dc:Description XMP-dc:Title)"
+  COMMENT="$(first_nonempty_tag "$SRC_FILE" EXIF:UserComment IPTC:Caption-Abstract XPComment)"
+  IPTC_KW="$(exiftool -s3 -sep ',' -IPTC:Keywords "$SRC_FILE" 2>/dev/null || true)"
+  XMP_KW="$(exiftool -s3 -sep ',' -XMP-dc:Subject "$SRC_FILE" 2>/dev/null || true)"
+  KEYWORDS="$(merge_keywords "$IPTC_KW" "$XMP_KW")"
+
+  if [[ "$DRY_RUN" == true ]]; then
+    echo "[dry-run] Would create $TAGINFO_PATH from $SRC_FILE:"
+    [[ -n "$AUTHOR" ]] && printf '  AUTHOR="%s"\n' "$AUTHOR"
+    [[ -n "$DESCRIPTION" ]] && printf '  DESCRIPTION="%s"\n' "$DESCRIPTION"
+    [[ -n "$KEYWORDS" ]] && printf '  KEYWORDS="%s"\n' "$KEYWORDS"
+    [[ -n "$COMMENT" ]] && printf '  COMMENT="%s"\n' "$COMMENT"
+    exit 0
+  fi
+
+  save_taginfo
+  echo "Created $TAGINFO_PATH from $(basename -- "$SRC_FILE")"
+  exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Load persistent tags from .taginfo (directory of the first FILE)
+# ---------------------------------------------------------------------------
+TAGINFO_DIR="$(dirname -- "${FILES[0]:-.}")"
+TAGINFO_PATH="$TAGINFO_DIR/.taginfo"
+
+TI_AUTHOR=""
+TI_DESCRIPTION=""
+TI_KEYWORDS=""
+TI_COMMENT=""
+
+if [[ -f "$TAGINFO_PATH" ]]; then
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ "$line" =~ ^[[:space:]]*(#.*)?$ ]] && continue
+    if [[ "$line" =~ ^([A-Z_]+)=\"(.*)\"[[:space:]]*$ ]]; then
+      case "${BASH_REMATCH[1]}" in
+      AUTHOR) TI_AUTHOR="${BASH_REMATCH[2]}" ;;
+      DESCRIPTION) TI_DESCRIPTION="${BASH_REMATCH[2]}" ;;
+      KEYWORDS) TI_KEYWORDS="${BASH_REMATCH[2]}" ;;
+      COMMENT) TI_COMMENT="${BASH_REMATCH[2]}" ;;
+      esac
+    fi
+  done <"$TAGINFO_PATH"
+fi
+
+# --author/--description/--comment: CLI overrides the stored value.
+AUTHOR="${AUTHOR:-$TI_AUTHOR}"
+DESCRIPTION="${DESCRIPTION:-$TI_DESCRIPTION}"
+COMMENT="${COMMENT:-$TI_COMMENT}"
+
+# --keywords: merge (union, de-duplicated) with stored keywords instead of replacing them.
+if [[ -n "$TI_KEYWORDS" || -n "$KEYWORDS" ]]; then
+  KEYWORDS="$(merge_keywords "$TI_KEYWORDS" "$KEYWORDS")"
 fi
 
 # ---------------------------------------------------------------------------
@@ -189,7 +363,16 @@ if [[ "$DRY_RUN" == true ]]; then
     printf '  %s\n' "exiftool" "${ARGS[@]}" "${FILES[@]}"
   fi
   if [[ "$COMMENT_DATE" == true ]]; then
-    printf '  %s\n' "LC_TIME=$LOCALE exiftool -EXIF:UserComment<\${DateTimeOriginal} -XPComment<\${DateTimeOriginal} -IPTC:Caption-Abstract<\${DateTimeOriginal} -d \"$DATE_FMT\"" "${FILES[@]}"
+    DRY_OVERWRITE=""
+    [[ "$BACKUP" == false ]] && DRY_OVERWRITE=" -overwrite_original"
+    printf '  %s\n' "LC_TIME=$LOCALE exiftool -EXIF:UserComment<\${DateTimeOriginal} -XPComment<\${DateTimeOriginal} -IPTC:Caption-Abstract<\${DateTimeOriginal} -d \"$DATE_FMT\"$DRY_OVERWRITE" "${FILES[@]}"
+  fi
+  if [[ "$SAVE" == true ]]; then
+    echo "[dry-run] Would save to $TAGINFO_PATH:"
+    [[ -n "$AUTHOR" ]] && printf '  AUTHOR="%s"\n' "$AUTHOR"
+    [[ -n "$DESCRIPTION" ]] && printf '  DESCRIPTION="%s"\n' "$DESCRIPTION"
+    [[ -n "$KEYWORDS" ]] && printf '  KEYWORDS="%s"\n' "$KEYWORDS"
+    [[ -n "$COMMENT" ]] && printf '  COMMENT="%s"\n' "$COMMENT"
   fi
   exit 0
 fi
@@ -206,13 +389,20 @@ if [[ "$COMMENT_DATE" == true ]]; then
   if [[ -n "$COMMENT" ]]; then
     echo -e "\nWarning: --comment and --comment-date both set — --comment takes precedence, skipping --comment-date." >&2
   else
-    LC_TIME="$LOCALE" exiftool \
-      "-EXIF:UserComment<\${DateTimeOriginal}" \
-      "-XPComment<\${DateTimeOriginal}" \
-      "-IPTC:Caption-Abstract<\${DateTimeOriginal}" \
-      -d "$DATE_FMT" \
-      "${FILES[@]}" >/dev/null
+    COMMENT_DATE_ARGS=(
+      "-EXIF:UserComment<\${DateTimeOriginal}"
+      "-XPComment<\${DateTimeOriginal}"
+      "-IPTC:Caption-Abstract<\${DateTimeOriginal}"
+      -d "$DATE_FMT"
+    )
+    [[ "$BACKUP" == false ]] && COMMENT_DATE_ARGS+=("-overwrite_original")
+    LC_TIME="$LOCALE" exiftool "${COMMENT_DATE_ARGS[@]}" "${FILES[@]}" >/dev/null
   fi
+fi
+
+if [[ "$SAVE" == true ]]; then
+  save_taginfo
+  echo "Saved metadata to $TAGINFO_PATH"
 fi
 
 [[ "$BACKUP" == true ]] && echo -e "\nTip: originals saved as FILE_original — use --no-backup to skip"
