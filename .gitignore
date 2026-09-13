@@ -17,8 +17,8 @@
 !**/.config/nvim/
 **/.config/nvim/spell
 
-# Allow Wezterm config
-!**/.config/wezterm/
+# Allow ghostty config
+!**/.config/ghostty/
 
 # Ignore vim except pack
 **/.vim/*

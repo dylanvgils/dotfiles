@@ -112,11 +112,20 @@ install_packages_darwin() {
   )
   local pkg
 
-  log_info "Install using homebrew (${brew_packages[*]} wezterm)"
+  local brew_casks=(
+    ghostty
+    font-jetbrains-mono-nerd-font
+  )
+
+  log_info "Install using homebrew (${brew_packages[*]})"
   for pkg in "${brew_packages[@]}"; do
     brew_has "$pkg" || brew install "$pkg"
   done
-  brew_has --cask wezterm || brew install --cask wezterm
+
+  log_info "Install casks using homebrew (${brew_casks[*]})"
+  for pkg in "${brew_casks[@]}"; do
+    brew_has --cask "$pkg" || brew install --cask "$pkg"
+  done
 }
 
 setup_packages_darwin() {

@@ -3,7 +3,7 @@ all:
 	stow --target=$$HOME --restow ssh
 	stow --target=$$HOME --restow tmux
 	stow --target=$$HOME --restow nvim
-	stow --target=$$HOME --restow wezterm
+	stow --target=$$HOME --restow ghostty
 	stow --target=$$HOME --restow zsh
 	stow --target=$$HOME --restow scripts
 
