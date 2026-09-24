@@ -5,18 +5,8 @@ return {
       servers = {
         vtsls = {
           settings = {
-            javascript = {
-              preferences = {
-                importModuleSpecifier = "shortest",
-                importModuleSpecifierEnding = "auto",
-              },
-            },
-            typescript = {
-              preferences = {
-                importModuleSpecifier = "shortest",
-                importModuleSpecifierEnding = "auto",
-              },
-            },
+            javascript = { preferences = { importModuleSpecifier = "shortest", importModuleSpecifierEnding = "auto" } },
+            typescript = { preferences = { importModuleSpecifier = "shortest", importModuleSpecifierEnding = "auto" } },
           },
         },
         cssls = {
@@ -27,11 +17,17 @@ return {
           },
         },
         eslint = {
-          format = true,
-          workingDirectories = { mode = "auto" },
-          codeActionOnSave = { enable = true, mode = "all" },
+          filetypes = {
+            "javascript",
+            "javascriptreact",
+            "typescript",
+            "typescriptreact",
+            "json",
+            "jsonc",
+          },
         },
-        tsserver = { enabled = false },
+        -- let eslint own JSON formatting
+        jsonls = { settings = { json = { format = { enable = false } } } },
       },
     },
   },
