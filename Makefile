@@ -1,6 +1,7 @@
 # All recreates all dotfile symlinks to the home directory
 all:
-	stow --target=$$HOME --restow ssh
+	stow --target=$$HOME --restow --no-folding ssh
+	chmod 700 $$HOME/.ssh
 	stow --target=$$HOME --restow tmux
 	stow --target=$$HOME --restow nvim
 	stow --target=$$HOME --restow ghostty

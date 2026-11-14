@@ -40,3 +40,6 @@
 Thumbs.db
 ehthumbs.db
 
+# Only track the ssh config
+**/.ssh/*
+!**/.ssh/config
