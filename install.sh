@@ -70,6 +70,7 @@ install_packages_linux() {
     zip
     unzip
     xsel
+    tmux
     fd-find
     fzf
     bat
@@ -143,11 +144,6 @@ install_sdkman() {
 
   log_info "Install using the official installer"
   curl -fsSL "$sdkman_install_script" | bash
-}
-
-install_tmux_linux() {
-  log_info "Install using aptitude"
-  sudo apt install -y tmux
 }
 
 install_lazygit_linux() {
@@ -268,11 +264,8 @@ cd "$dotfiles_dir" || exit
 log_info "Soruce configuration files using included Makefile"
 make init
 
-# Install tmux, lazygit and neovim (darwin has them in the Brewfile)
+# Install lazygit and neovim (darwin has them in the Brewfile)
 if [ "$platform" = "linux" ]; then
-  log_header "Install tmux"
-  install_tmux_linux
-
   log_header "Install lazygit"
   install_lazygit_linux
 
