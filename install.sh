@@ -36,13 +36,32 @@ brew_has() {
   return 1
 }
 
+# Puts brew on PATH for this script (Apple Silicon or Intel location)
+load_brew_env() {
+  local brew_bin
+  for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    if [ -x "$brew_bin" ]; then
+      eval "$("$brew_bin" shellenv)"
+      return 0
+    fi
+  done
+  return 1
+}
+
 prepare_system_darwin() {
-  if [ -z "$(which brew)" ]; then
+  if [ -z "$(command -v brew)" ]; then
+    load_brew_env
+  fi
+
+  if [ -z "$(command -v brew)" ]; then
     log_info "Install homebrew"
     /bin/bash -c "$(curl -fsSL $homebrew_install_script)"
+    load_brew_env || {
+      log_info "Homebrew not found after install, exiting install script."
+      exit 1
+    }
     cp ./docs/examples/.zshrc.local ~/
-    # shellcheck disable=SC2016 # written verbatim, expanded later when .zshrc.local is sourced
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>~/.zshrc.local
+    echo "eval \"\$($(command -v brew) shellenv)\"" >>~/.zshrc.local
   else
     log_info "Update homebrew"
     brew update
