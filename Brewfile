@@ -10,3 +10,4 @@ brew "neovim"
 
 cask "ghostty"
 cask "font-jetbrains-mono-nerd-font"
+cask "linearmouse"
