@@ -14,7 +14,7 @@ all:
 	chmod 700 $$HOME/.ssh
 	stow --target=$$HOME --restow $(PACKAGES)
 
-# Init initializes the submodules and (re)creates the symlinks in th ehome directory
+# Init initializes the submodules and (re)creates the symlinks in the home directory
 init: submodule.init all
 
 # Update upates all submodules and recreates the symbolic liks in the home directory
