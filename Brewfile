@@ -1,0 +1,13 @@
+brew "git"
+brew "stow"
+brew "ripgrep"
+brew "fd"
+brew "fzf"
+brew "bat"
+brew "tmux"
+brew "lazygit"
+brew "neovim"
+
+cask "ghostty"
+cask "font-jetbrains-mono-nerd-font"
+cask "linearmouse"

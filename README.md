@@ -28,6 +28,9 @@ sudo apt-get update && sudo apt-get install git zsh make stow
 
 # Fedora (or other distros using dnf)
 sudo dnf install git zsh make stow
+
+# macOS (installs everything in the Brewfile, run from the repository root)
+brew bundle
 ```
 
 For installing `oh-my-zsh`, use the script listed on their [website](https://ohmyz.sh/#install).

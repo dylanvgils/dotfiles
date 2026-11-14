@@ -4,6 +4,7 @@
 #
 dotfiles_repo="https://github.com/dylanvgils/dotfiles.git"
 dotfiles_dir="$HOME/dotfiles"
+dotfiles_examples_dir="$dotfiles_dir/docs/examples"
 
 config_dir="$HOME/.config"
 
@@ -28,21 +29,30 @@ create_dir() {
   fi
 }
 
-brew_has() {
-  if brew list "$@" &>/dev/null; then
-    log_info "$* already installed, skipping"
-    return 0
-  fi
+# Puts brew on PATH for this script (Apple Silicon or Intel location)
+load_brew_env() {
+  local brew_bin
+  for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    if [ -x "$brew_bin" ]; then
+      eval "$("$brew_bin" shellenv)"
+      return 0
+    fi
+  done
   return 1
 }
 
 prepare_system_darwin() {
-  if [ -z "$(which brew)" ]; then
+  if [ -z "$(command -v brew)" ]; then
+    load_brew_env
+  fi
+
+  if [ -z "$(command -v brew)" ]; then
     log_info "Install homebrew"
     /bin/bash -c "$(curl -fsSL $homebrew_install_script)"
-    cp ./docs/examples/.zshrc.local ~/
-    # shellcheck disable=SC2016 # written verbatim, expanded later when .zshrc.local is sourced
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>~/.zshrc.local
+    load_brew_env || {
+      log_info "Homebrew not found after install, exiting install script."
+      exit 1
+    }
   else
     log_info "Update homebrew"
     brew update
@@ -101,45 +111,28 @@ setup_packages_linux() {
   set_default_shell_linux
 }
 
-install_packages_darwin() {
-  local brew_packages=(
-    git
-    stow
-    ripgrep
-    fd
-    fzf
-    bat
-  )
-  local pkg
+# Puts brew on PATH in new shells via ~/.zshrc.local, created from the example if missing
+setup_brew_shellenv_darwin() {
+  local zshrc_local="$HOME/.zshrc.local"
 
-  local brew_casks=(
-    ghostty
-    font-jetbrains-mono-nerd-font
-  )
+  if [ ! -f "$zshrc_local" ]; then
+    cp "$dotfiles_examples_dir/.zshrc.local" "$zshrc_local"
+  fi
 
-  log_info "Install using homebrew (${brew_packages[*]})"
-  for pkg in "${brew_packages[@]}"; do
-    brew_has "$pkg" || brew install "$pkg"
-  done
-
-  log_info "Install casks using homebrew (${brew_casks[*]})"
-  for pkg in "${brew_casks[@]}"; do
-    brew_has --cask "$pkg" || brew install --cask "$pkg"
-  done
+  if ! grep -q "brew shellenv" "$zshrc_local"; then
+    log_info "Add brew shellenv to $zshrc_local"
+    echo "eval \"\$($(command -v brew) shellenv)\"" >>"$zshrc_local"
+  fi
 }
 
 setup_packages_darwin() {
-  install_packages_darwin
+  log_info "Install using homebrew bundle"
+  brew bundle --file="$dotfiles_dir/Brewfile"
 }
 
 install_tmux_linux() {
   log_info "Install using aptitude"
   sudo apt install -y tmux
-}
-
-install_tmux_darwin() {
-  log_info "Install using homebrew"
-  brew_has tmux || brew install tmux
 }
 
 install_lazygit_linux() {
@@ -159,11 +152,6 @@ install_lazygit_linux() {
   fi
 }
 
-install_lazygit_darwin() {
-  log_info "Install using homebrew"
-  brew_has lazygit || brew install lazygit
-}
-
 install_neovim_linux() {
   local nvim_install_dir="/opt/nvim"
   local nvim_bin="$nvim_install_dir/bin/nvim"
@@ -180,11 +168,6 @@ install_neovim_linux() {
   log_info "Update alternatives, set nvim as default"
   sudo update-alternatives --install /usr/bin/vim vim "$nvim_bin" 1
   sudo update-alternatives --set vim "$nvim_bin"
-}
-
-install_neovim_darwin() {
-  log_info "Install using homebrew"
-  brew_has neovim || brew install neovim
 }
 
 #
@@ -215,9 +198,11 @@ fi
 create_dir "$HOME/.config"
 create_dir "$HOME/.local/share"
 
-# Update and install required packages
-log_header "Install required packages"
-"setup_packages_${platform}"
+# Update and install required packages (darwin installs from the Brewfile after cloning)
+if [ "$platform" = "linux" ]; then
+  log_header "Install required packages"
+  setup_packages_linux
+fi
 
 # Install oh-my-zsh
 log_header "Install oh-my-zsh"
@@ -235,10 +220,17 @@ fi
 # Make sure the latest version of the dotfiles are pulled
 if [ -d "$dotfiles_dir" ]; then
   log_info "Make sure latest changes are pulled"
-  git pull origin main
+  git -C "$dotfiles_dir" pull origin main
 else
   log_info "Cloning dotfiles repository ($dotfiles_repo) in $dotfiles_dir"
   git clone "$dotfiles_repo" "$dotfiles_dir"
+fi
+
+if [ "$platform" = "darwin" ]; then
+  setup_brew_shellenv_darwin
+
+  log_header "Install required packages"
+  setup_packages_darwin
 fi
 
 # Remove existing configuration files so that they can be overriden later
@@ -261,21 +253,21 @@ cd "$dotfiles_dir" || exit
 log_info "Soruce configuration files using included Makefile"
 make init
 
-# Install tmux
-log_header "Install tmux"
-"install_tmux_${platform}"
+# Install tmux, lazygit and neovim (darwin has them in the Brewfile)
+if [ "$platform" = "linux" ]; then
+  log_header "Install tmux"
+  install_tmux_linux
 
-log_info "Install tmux plugins"
+  log_header "Install lazygit"
+  install_lazygit_linux
+
+  log_header "Install neovim"
+  install_neovim_linux
+fi
+
+log_header "Install tmux plugins"
 export TMUX_PLUGIN_MANAGER_PATH="$config_dir/tmux/plugins"
 "$config_dir"/tmux/plugins/tpm/bin/install_plugins
-
-# Install lazygit
-log_header "Install lazygit"
-"install_lazygit_${platform}"
-
-# Install Neovim (nvim)
-log_header "Install neovim"
-"install_neovim_${platform}"
 
 # Run the new shell
 log_header "Done! Start shell"
