@@ -20,6 +20,9 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export NVM_DIR="$XDG_DATA_HOME/nvm"
 export NVM_COMPLETION=true
 
+# SDKMAN directory
+export SDKMAN_DIR="$XDG_DATA_HOME/sdkman"
+
 # Path
 export PATH="$PATH:$HOME/.local/scripts"
 

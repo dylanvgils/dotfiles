@@ -5,6 +5,9 @@ This document describes which plugins are installed in the dotfiles repository.
 - **[zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)**: autosuggestions based on the command history, shown in light gray color.
 - **[dracula](https://github.com/dracula/zsh)**: dark theme for zsh.
 
+## Tools
+- **[SDKMAN](https://sdkman.io/)**: version manager for Java and other JVM tools, installed by `install.sh` in `$XDG_DATA_HOME/sdkman` (manual install: `curl -s "https://get.sdkman.io?rcupdate=false" | SDKMAN_DIR="$HOME/.local/share/sdkman" bash`).
+
 ## tmux
 - **[tpm](https://github.com/tmux-plugins/tpm)**: plugin manager for tmux.
 

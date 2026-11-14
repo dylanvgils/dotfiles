@@ -104,5 +104,8 @@ source $ZSH/oh-my-zsh.sh
 source $HOME/.aliases
 source $HOME/.completion
 
+# Load SDKMAN, if installed
+include "$SDKMAN_DIR/bin/sdkman-init.sh"
+
 # Load ssh agent
 load_ssh_agent

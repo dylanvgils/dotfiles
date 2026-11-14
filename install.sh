@@ -10,6 +10,7 @@ config_dir="$HOME/.config"
 
 homebrew_install_script="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 omzsh_install_script="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+sdkman_install_script="https://get.sdkman.io?rcupdate=false"
 nvim_download_url="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
 
 #
@@ -67,6 +68,7 @@ install_packages_linux() {
     stow
     curl
     zip
+    unzip
     xsel
     fd-find
     fzf
@@ -128,6 +130,19 @@ setup_brew_shellenv_darwin() {
 setup_packages_darwin() {
   log_info "Install using homebrew bundle"
   brew bundle --file="$dotfiles_dir/Brewfile"
+}
+
+# Installs SDKMAN without touching the (stowed) shell rc files
+install_sdkman() {
+  export SDKMAN_DIR="$HOME/.local/share/sdkman"
+
+  if [ -d "$SDKMAN_DIR" ]; then
+    log_info "SDKMAN already installed"
+    return
+  fi
+
+  log_info "Install using the official installer"
+  curl -fsSL "$sdkman_install_script" | bash
 }
 
 install_tmux_linux() {
@@ -264,6 +279,9 @@ if [ "$platform" = "linux" ]; then
   log_header "Install neovim"
   install_neovim_linux
 fi
+
+log_header "Install SDKMAN"
+install_sdkman
 
 log_header "Install tmux plugins"
 export TMUX_PLUGIN_MANAGER_PATH="$config_dir/tmux/plugins"
