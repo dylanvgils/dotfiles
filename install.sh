@@ -181,6 +181,20 @@ install_neovim_linux() {
   sudo update-alternatives --set vim "$nvim_bin"
 }
 
+install_cosign_linux() {
+  local cosign_tmp="/tmp/cosign-linux-amd64"
+
+  if [ -n "$(which cosign)" ]; then
+    log_info "Cosign already installed"
+    return
+  fi
+
+  log_info "Install release binary"
+  curl -Lo "$cosign_tmp" "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
+  sudo install "$cosign_tmp" /usr/local/bin/cosign
+  rm "$cosign_tmp"
+}
+
 #
 # Script
 #
@@ -264,13 +278,16 @@ cd "$dotfiles_dir" || exit
 log_info "Soruce configuration files using included Makefile"
 make init
 
-# Install lazygit and neovim (darwin has them in the Brewfile)
+# Install lazygit, neovim and cosign (darwin has them in the Brewfile)
 if [ "$platform" = "linux" ]; then
   log_header "Install lazygit"
   install_lazygit_linux
 
   log_header "Install neovim"
   install_neovim_linux
+
+  log_header "Install cosign"
+  install_cosign_linux
 fi
 
 log_header "Install SDKMAN"

@@ -7,6 +7,7 @@ brew "bat"
 brew "tmux"
 brew "lazygit"
 brew "neovim"
+brew "cosign"
 
 cask "raycast"
 cask "ghostty"
