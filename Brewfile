@@ -8,6 +8,7 @@ brew "tmux"
 brew "lazygit"
 brew "neovim"
 
+cask "raycast"
 cask "ghostty"
 cask "font-jetbrains-mono-nerd-font"
 cask "linearmouse"
