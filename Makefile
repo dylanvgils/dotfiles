@@ -1,12 +1,18 @@
+OS := $(shell uname -s)
+
+# Stow packages for every platform
+PACKAGES := tmux nvim zsh scripts
+
+# macOS only
+ifeq ($(OS),Darwin)
+PACKAGES += ghostty
+endif
+
 # All recreates all dotfile symlinks to the home directory
 all:
 	stow --target=$$HOME --restow --no-folding ssh
 	chmod 700 $$HOME/.ssh
-	stow --target=$$HOME --restow tmux
-	stow --target=$$HOME --restow nvim
-	stow --target=$$HOME --restow ghostty
-	stow --target=$$HOME --restow zsh
-	stow --target=$$HOME --restow scripts
+	stow --target=$$HOME --restow $(PACKAGES)
 
 # Init initializes the submodules and (re)creates the symlinks in th ehome directory
 init: submodule.init all
