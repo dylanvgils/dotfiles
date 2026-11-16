@@ -4,10 +4,6 @@
 alias fcd="cd \$(fd --type d | fzf)"
 alias fvi="nvim \$(fd --type f --hidden | fzf --preview='fzf-preview.sh {}' --preview-window=right:60%)"
 
-# Source reload
-alias reload.zsh="source $HOME/.zshrc"
-alias reload.env="source $HOME/.zshenv"
-
 #
 # Git alias for redirecting git command to Windows, when in the Windows
 # file system.
@@ -24,6 +20,9 @@ function git {
 
 # ls
 alias ll="ls -Alh"
+
+# Dotfiles
+alias dot="dotfiles"
 
 # Source optional aliases
 include ~/.aliases.local

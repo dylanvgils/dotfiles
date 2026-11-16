@@ -37,6 +37,27 @@ isWinDir() {
   return $(false)
 }
 
+# Manage the dotfiles, a function so reload runs in the current shell
+dotfiles() {
+  case "$1" in
+  update)
+    # Load the script into memory first, git pull may rewrite it while it runs
+    DOTFILES_UPDATE=1 bash -c "$(cat "$HOME/dotfiles/install.sh")" && dotfiles reload
+    ;;
+  reload)
+    source "$HOME/.zshenv" && source "$HOME/.zshrc"
+    ;;
+  *)
+    echo "Usage: dotfiles <command>"
+    echo
+    echo "Commands:"
+    echo "  update  Re-run install.sh to pull the dotfiles and update packages and tools"
+    echo "  reload  Reload .zshenv and .zshrc in the current shell"
+    return 1
+    ;;
+  esac
+}
+
 # Include optional files
 include() {
   [[ -f "$1" ]] && source "$1"
