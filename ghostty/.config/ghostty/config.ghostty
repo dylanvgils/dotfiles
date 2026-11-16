@@ -3,8 +3,8 @@ theme = Dracula+
 window-colorspace = "display-p3"
 
 # Font
-font-family = JetBrainsMono Nerd Font
-font-size = 12
+font-family = JetBrains Mono
+font-size = 13
 
 # Background
 background-opacity = 0.92

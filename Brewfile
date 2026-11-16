@@ -1,3 +1,4 @@
+brew "bash"
 brew "git"
 brew "stow"
 brew "ripgrep"
@@ -11,5 +12,4 @@ brew "cosign"
 
 cask "raycast"
 cask "ghostty"
-cask "font-jetbrains-mono-nerd-font"
 cask "linearmouse"

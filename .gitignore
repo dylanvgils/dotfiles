@@ -15,6 +15,7 @@
 
 # Allow Neovim config
 !**/.config/nvim/
+**/.config/nvim/lazy-lock.json
 **/.config/nvim/spell
 
 # Allow ghostty config
