@@ -3,8 +3,8 @@
 # Reload auto completion
 # http://zsh.sourceforge.net/Doc/Release/Completion-System.html
 
-# Include custom script completion in fpath
-fpath+=($HOME/.local/scripts)
+# Include custom script and zsh function completions in fpath
+fpath+=($HOME/.local/scripts $XDG_DATA_HOME/zsh/completions)
 
 # Include local completions
 include ~/.completion.local

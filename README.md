@@ -75,20 +75,10 @@ source ~/.zshenv && source ~/.zshrc
 
 ## 2.3 Update the configuration to the latest version
 
-To update the dotfiles to the latest version execute the following commands:
+The install script is idempotent, re-running it updates everything: the dotfiles, packages (brew/apt), the Linux release binaries (lazygit, neovim, cosign), oh-my-zsh, SDKMAN and the tmux plugins. The `dotfiles` command re-runs it:
 
 ```sh
-# Change directory to the dotfiles repository root
-cd ~/dotfiles
-
-# Pull the latest changes from the remote
-git pull origin main
-
-# Run the stow command using make (implicit call to 'all' target)
-make
-
-# Reload the shell configuration
-reload.env && reload.zsh
+dotfiles update
 ```
 
 ## 2.4 Uninstall the dotfiles from the system
@@ -124,7 +114,7 @@ git submodule add git@github.com/username/foo.git pack/plugins/start/foo
 git commit -m "Add bar submodule to vim"
 
 # Reload the shell configuration
-reload.env && reload.zsh
+dotfiles reload
 ```
 
 ### 3.2 Removing submodule
@@ -171,7 +161,7 @@ make update
 git submodule update --recursive --remote
 
 # Reload the shell configuration
-reload.env && reload.zsh
+dotfiles reload
 ```
 
 ## 4. System specific configuration

@@ -29,6 +29,8 @@
 # Ignore everything in local/share except (zsh)
 **/.local/*
 **/.local/*/
+!**/.local/share/
+**/.local/share/*
 !**/.local/share/zsh/
 !**/.local/scripts/
 

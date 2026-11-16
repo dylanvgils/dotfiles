@@ -30,6 +30,28 @@ create_dir() {
   fi
 }
 
+# Prints the latest release version of a GitHub repo (owner/name), without the "v" prefix
+github_latest_version() {
+  curl -fsSL "https://api.github.com/repos/$1/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*'
+}
+
+# Succeeds when the latest version is known and differs from the installed one
+needs_install() {
+  local name="$1" installed="$2" latest="$3"
+
+  if [ -z "$latest" ]; then
+    log_info "Could not get the latest $name version, skipping"
+    return 1
+  fi
+
+  if [ "$installed" = "$latest" ]; then
+    log_info "$name $installed is up to date"
+    return 1
+  fi
+
+  log_info "Install $name $latest (installed: ${installed:-none})"
+}
+
 # Puts brew on PATH for this script (Apple Silicon or Intel location)
 load_brew_env() {
   local brew_bin
@@ -138,7 +160,10 @@ install_sdkman() {
   export SDKMAN_DIR="$HOME/.local/share/sdkman"
 
   if [ -d "$SDKMAN_DIR" ]; then
-    log_info "SDKMAN already installed"
+    log_info "SDKMAN already installed, updating"
+    # shellcheck source=/dev/null
+    source "$SDKMAN_DIR/bin/sdkman-init.sh"
+    sdk selfupdate
     return
   fi
 
@@ -147,28 +172,34 @@ install_sdkman() {
 }
 
 install_lazygit_linux() {
-  local lazygit_version
+  local latest installed
 
-  log_info "Install from source"
-
-  if [ -z "$(which lazygit)" ]; then
-    lazygit_version=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
-    curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_Linux_x86_64.tar.gz"
-
-    tar -xf /tmp/lazygit.tar.gz -C /tmp
-    sudo install /tmp/lazygit -D -t /usr/local/bin/
-    rm -r /tmp/lazygit.tar.gz /tmp/lazygit
-  else
-    log_info "Lazygit alread installed"
+  latest=$(github_latest_version jesseduffield/lazygit)
+  if [ -n "$(command -v lazygit)" ]; then
+    installed=$(lazygit --version | grep -Po 'version=\K[0-9.]+')
   fi
+
+  needs_install lazygit "$installed" "$latest" || return 0
+
+  curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${latest}/lazygit_${latest}_Linux_x86_64.tar.gz"
+  tar -xf /tmp/lazygit.tar.gz -C /tmp
+  sudo install /tmp/lazygit -D -t /usr/local/bin/
+  rm -r /tmp/lazygit.tar.gz /tmp/lazygit
 }
 
 install_neovim_linux() {
   local nvim_install_dir="/opt/nvim"
   local nvim_bin="$nvim_install_dir/bin/nvim"
   local nvim_tmp="/tmp/nvim-linux64.tar.gz"
+  local latest installed
 
-  log_info "Install from source"
+  latest=$(github_latest_version neovim/neovim)
+  if [ -x "$nvim_bin" ]; then
+    installed=$("$nvim_bin" --version | head -1 | grep -Po 'v\K[0-9.]+')
+  fi
+
+  needs_install neovim "$installed" "$latest" || return 0
+
   curl -Lo "$nvim_tmp" "$nvim_download_url"
   sudo rm -rf "$nvim_install_dir"
   sudo mkdir -p "$nvim_install_dir"
@@ -183,16 +214,35 @@ install_neovim_linux() {
 
 install_cosign_linux() {
   local cosign_tmp="/tmp/cosign-linux-amd64"
+  local latest installed
 
-  if [ -n "$(which cosign)" ]; then
-    log_info "Cosign already installed"
-    return
+  latest=$(github_latest_version sigstore/cosign)
+  if [ -n "$(command -v cosign)" ]; then
+    installed=$(cosign version 2>&1 | grep -Po 'GitVersion:\s+v\K[0-9.]+')
   fi
 
-  log_info "Install release binary"
+  needs_install cosign "$installed" "$latest" || return 0
+
   curl -Lo "$cosign_tmp" "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
   sudo install "$cosign_tmp" /usr/local/bin/cosign
   rm "$cosign_tmp"
+}
+
+# Updates all tmux plugins except tpm, a submodule (detached HEAD) updated by git
+update_tmux_plugins() {
+  local plugin_dir plugin
+  local plugins=()
+
+  for plugin_dir in "$TMUX_PLUGIN_MANAGER_PATH"/*/; do
+    plugin=$(basename "$plugin_dir")
+    if [ "$plugin" != "tpm" ]; then
+      plugins+=("$plugin")
+    fi
+  done
+
+  if [ ${#plugins[@]} -gt 0 ]; then
+    "$TMUX_PLUGIN_MANAGER_PATH"/tpm/bin/update_plugins "${plugins[@]}"
+  fi
 }
 
 #
@@ -239,7 +289,8 @@ if [ -z "${ZSH+x}" ]; then
 
   sh -c "$(curl -fsSL $omzsh_install_script)"
 else
-  log_info ".oh-my-zsh directory exists, skipping install"
+  log_info "oh-my-zsh already installed, updating"
+  ZSH="$ZSH" zsh -f "$ZSH/tools/upgrade.sh"
 fi
 
 # Make sure the latest version of the dotfiles are pulled
@@ -296,7 +347,12 @@ install_sdkman
 log_header "Install tmux plugins"
 export TMUX_PLUGIN_MANAGER_PATH="$config_dir/tmux/plugins"
 "$config_dir"/tmux/plugins/tpm/bin/install_plugins
+update_tmux_plugins
 
-# Run the new shell
-log_header "Done! Start shell"
-$SHELL
+# Run the new shell, `dotfiles update` reloads the current shell instead
+if [ -n "$DOTFILES_UPDATE" ]; then
+  log_header "Done!"
+else
+  log_header "Done! Start shell"
+  $SHELL
+fi

@@ -1,0 +1,14 @@
+#compdef dotfiles
+
+_dotfiles() {
+  local -a commands
+
+  commands=(
+    'update:Re-run install.sh to pull the dotfiles and update packages and tools'
+    'reload:Reload .zshenv and .zshrc in the current shell'
+  )
+
+  _describe 'command' commands
+}
+
+_dotfiles "$@"
