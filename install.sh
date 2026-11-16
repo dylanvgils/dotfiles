@@ -11,7 +11,16 @@ config_dir="$HOME/.config"
 homebrew_install_script="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 omzsh_install_script="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
 sdkman_install_script="https://get.sdkman.io?rcupdate=false"
-nvim_download_url="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
+
+# Linux release binaries, GitHub repo and asset name (%s is the version)
+bin_dir="/usr/local/bin"
+lazygit_repo="jesseduffield/lazygit"
+lazygit_asset="lazygit_%s_linux_x86_64.tar.gz"
+nvim_repo="neovim/neovim"
+nvim_asset="nvim-linux-x86_64.tar.gz"
+nvim_install_dir="/opt/nvim"
+cosign_repo="sigstore/cosign"
+cosign_asset="cosign-linux-amd64"
 
 #
 # Functions
@@ -30,9 +39,37 @@ create_dir() {
   fi
 }
 
-# Prints the latest release version of a GitHub repo (owner/name), without the "v" prefix
-github_latest_version() {
-  curl -fsSL "https://api.github.com/repos/$1/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*'
+# Prints the latest release JSON of a GitHub repo (owner/name)
+github_latest_release() {
+  curl -fsSL "https://api.github.com/repos/$1/releases/latest"
+}
+
+# Prints the version of a release JSON, without the "v" prefix
+release_version() {
+  jq -r '.tag_name // empty | ltrimstr("v")' <<<"$1"
+}
+
+# Downloads a release asset and checks it against GitHub's sha256 digest
+# Usage: download_release_asset <release json> <asset name> <output file>
+download_release_asset() {
+  local release="$1" asset="$2" output="$3"
+  local url digest
+
+  url=$(jq -r --arg name "$asset" '.assets[] | select(.name == $name) | .browser_download_url // empty' <<<"$release")
+  digest=$(jq -r --arg name "$asset" '.assets[] | select(.name == $name) | .digest // empty' <<<"$release")
+
+  if [ -z "$url" ] || [[ "$digest" != sha256:* ]]; then
+    log_info "No download or checksum found for $asset, skipping"
+    return 1
+  fi
+
+  curl -fsSLo "$output" "$url" || return 1
+
+  if ! echo "${digest#sha256:}  $output" | sha256sum --check --quiet; then
+    log_info "Checksum mismatch for $asset, skipping"
+    rm -f "$output"
+    return 1
+  fi
 }
 
 # Prints the version of an installed command, empty when missing
@@ -108,6 +145,7 @@ install_packages_linux() {
     fzf
     bat
     ripgrep
+    jq
     shellcheck
     build-essential
   )
@@ -121,7 +159,7 @@ install_packages_linux() {
   # fd-find installs its binary as `fdfind` on Debian/Ubuntu since `fd` was already taken
   if [ -z "$(which fd)" ] && [ -n "$(which fdfind)" ]; then
     log_info "Symlinking fdfind to fd"
-    sudo ln -sf "$(which fdfind)" /usr/local/bin/fd
+    sudo ln -sf "$(which fdfind)" "$bin_dir/fd"
   fi
 }
 
@@ -184,36 +222,38 @@ install_sdkman() {
 }
 
 install_lazygit_linux() {
-  local latest installed
+  local release latest installed
 
-  latest=$(github_latest_version jesseduffield/lazygit)
+  release=$(github_latest_release "$lazygit_repo")
+  latest=$(release_version "$release")
   installed=$(installed_version 'version=\K[0-9.]+' lazygit --version)
 
   needs_install lazygit "$installed" "$latest" || return 0
 
-  curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${latest}/lazygit_${latest}_Linux_x86_64.tar.gz"
+  # shellcheck disable=SC2059 # the asset name is the format string
+  download_release_asset "$release" "$(printf "$lazygit_asset" "$latest")" /tmp/lazygit.tar.gz || return 1
   tar -xf /tmp/lazygit.tar.gz -C /tmp
-  sudo install /tmp/lazygit -D -t /usr/local/bin/
+  sudo install /tmp/lazygit -D -t "$bin_dir/"
   rm -r /tmp/lazygit.tar.gz /tmp/lazygit
 }
 
 install_neovim_linux() {
-  local nvim_install_dir="/opt/nvim"
   local nvim_bin="$nvim_install_dir/bin/nvim"
   local nvim_tmp="/tmp/nvim-linux64.tar.gz"
-  local latest installed
+  local release latest installed
 
-  latest=$(github_latest_version neovim/neovim)
+  release=$(github_latest_release "$nvim_repo")
+  latest=$(release_version "$release")
   installed=$(installed_version 'NVIM v\K[0-9.]+' "$nvim_bin" --version)
 
   needs_install neovim "$installed" "$latest" || return 0
 
-  curl -Lo "$nvim_tmp" "$nvim_download_url"
+  download_release_asset "$release" "$nvim_asset" "$nvim_tmp" || return 1
   sudo rm -rf "$nvim_install_dir"
   sudo mkdir -p "$nvim_install_dir"
   sudo tar -C "$nvim_install_dir" -xzf "$nvim_tmp" --strip-components=1
   rm "$nvim_tmp"
-  sudo ln -sf "$nvim_bin" /usr/local/bin/nvim
+  sudo ln -sf "$nvim_bin" "$bin_dir/nvim"
 
   log_info "Update alternatives, set nvim as default"
   sudo update-alternatives --install /usr/bin/vim vim "$nvim_bin" 1
@@ -222,15 +262,16 @@ install_neovim_linux() {
 
 install_cosign_linux() {
   local cosign_tmp="/tmp/cosign-linux-amd64"
-  local latest installed
+  local release latest installed
 
-  latest=$(github_latest_version sigstore/cosign)
+  release=$(github_latest_release "$cosign_repo")
+  latest=$(release_version "$release")
   installed=$(installed_version 'GitVersion:\s+v\K[0-9.]+' cosign version)
 
   needs_install cosign "$installed" "$latest" || return 0
 
-  curl -Lo "$cosign_tmp" "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
-  sudo install "$cosign_tmp" /usr/local/bin/cosign
+  download_release_asset "$release" "$cosign_asset" "$cosign_tmp" || return 1
+  sudo install "$cosign_tmp" "$bin_dir/cosign"
   rm "$cosign_tmp"
 }
 
