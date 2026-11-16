@@ -108,6 +108,7 @@ install_packages_linux() {
     fzf
     bat
     ripgrep
+    shellcheck
     build-essential
   )
 
