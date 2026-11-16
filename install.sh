@@ -35,6 +35,17 @@ github_latest_version() {
   curl -fsSL "https://api.github.com/repos/$1/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*'
 }
 
+# Prints the version of an installed command, empty when missing
+# Usage: installed_version <grep -P pattern> <command> [args...]
+installed_version() {
+  local pattern="$1"
+  shift
+
+  if [ -n "$(command -v "$1")" ]; then
+    "$@" 2>&1 | grep -m1 -Po "$pattern"
+  fi
+}
+
 # Succeeds when the latest version is known and differs from the installed one
 needs_install() {
   local name="$1" installed="$2" latest="$3"
@@ -175,9 +186,7 @@ install_lazygit_linux() {
   local latest installed
 
   latest=$(github_latest_version jesseduffield/lazygit)
-  if [ -n "$(command -v lazygit)" ]; then
-    installed=$(lazygit --version | grep -Po 'version=\K[0-9.]+')
-  fi
+  installed=$(installed_version 'version=\K[0-9.]+' lazygit --version)
 
   needs_install lazygit "$installed" "$latest" || return 0
 
@@ -194,9 +203,7 @@ install_neovim_linux() {
   local latest installed
 
   latest=$(github_latest_version neovim/neovim)
-  if [ -x "$nvim_bin" ]; then
-    installed=$("$nvim_bin" --version | head -1 | grep -Po 'v\K[0-9.]+')
-  fi
+  installed=$(installed_version 'NVIM v\K[0-9.]+' "$nvim_bin" --version)
 
   needs_install neovim "$installed" "$latest" || return 0
 
@@ -217,9 +224,7 @@ install_cosign_linux() {
   local latest installed
 
   latest=$(github_latest_version sigstore/cosign)
-  if [ -n "$(command -v cosign)" ]; then
-    installed=$(cosign version 2>&1 | grep -Po 'GitVersion:\s+v\K[0-9.]+')
-  fi
+  installed=$(installed_version 'GitVersion:\s+v\K[0-9.]+' cosign version)
 
   needs_install cosign "$installed" "$latest" || return 0
 
