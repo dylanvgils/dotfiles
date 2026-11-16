@@ -70,6 +70,8 @@ download_release_asset() {
     rm -f "$output"
     return 1
   fi
+
+  log_info "Checksum OK for $asset"
 }
 
 # Prints the version of an installed command, empty when missing
