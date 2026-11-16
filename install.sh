@@ -63,7 +63,7 @@ download_release_asset() {
     return 1
   fi
 
-  curl -fsSLo "$output" "$url" || return 1
+  curl -fL --progress-bar -o "$output" "$url" || return 1
 
   if ! echo "${digest#sha256:}  $output" | sha256sum --check --quiet; then
     log_info "Checksum mismatch for $asset, skipping"
@@ -400,6 +400,7 @@ update_tmux_plugins
 if [ -n "$DOTFILES_UPDATE" ]; then
   log_header "Done!"
 else
-  log_header "Done! Start shell"
-  $SHELL
+  # Start zsh directly, $SHELL may still be the old login shell until the next login
+  log_header "Done! Start zsh"
+  SHELL="$(command -v zsh)" exec zsh
 fi

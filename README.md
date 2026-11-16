@@ -173,6 +173,30 @@ For the `.aliases`, `.completion`, `.zshrc` and `.zshenv` files a local version 
 - [.zshrc.local](docs/examples/.zshrc.local)
 - [.zshenv.local](docs/examples/.zshenv.local)
 
+## 5. Testing the install script
+
+The install script can be tested on Linux in a fresh Ubuntu container, this requires Docker. The container uses the local repository, including uncommitted changes, and is removed on exit.
+
+1. Run the install script in the container:
+
+   ```sh
+   cd ~/dotfiles
+   make test.linux
+   ```
+
+2. Check that the script ends in a zsh shell, without "Checksum mismatch" or tmux plugin errors.
+
+3. Check the `dotfiles` command and its completion:
+
+   ```sh
+   dotfiles <tab>    # lists update and reload
+   dotfiles update   # all release binaries are "up to date", the shell reloads
+   ```
+
+4. Exit the shell to remove the container.
+
+> **NOTE:** The script pulls `main` from GitHub, which fails when an uncommitted change conflicts with it. The script continues with the local files in that case.
+
 ## Known issues
 
 The `docs` folder contains a [issues.md](docs/issues.md) file, this file describes the known issues in the repository.

@@ -35,3 +35,14 @@ delete:
 # Pull pulls the latest refs from the remote repository
 pull:
 	git pull origin $$(git rev-parse --abbrev-ref HEAD)
+
+# Test.linux runs install.sh with the local changes in a fresh Ubuntu container
+test.linux:
+	docker run --rm --interactive --tty \
+		--volume "$(CURDIR):/src:ro" \
+		--env DEBIAN_FRONTEND=noninteractive \
+		ubuntu:24.04 bash -c '\
+			apt-get update && apt-get install --yes sudo git curl && \
+			cp --recursive /src ~/dotfiles && \
+			git -C ~/dotfiles remote set-url origin https://github.com/dylanvgils/dotfiles.git && \
+			bash ~/dotfiles/install.sh'
