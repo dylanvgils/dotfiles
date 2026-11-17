@@ -12,3 +12,6 @@
 # EXAMPLE:
 #
 # export PATH=$PATH:/YOUR/BINARY
+
+# Mac App Store app IDs to install, space-separated (see brew/Brewfile.mas)
+# export DOTFILES_MAS_APPS="<app-store-id>"

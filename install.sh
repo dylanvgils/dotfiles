@@ -5,6 +5,7 @@
 dotfiles_repo="https://github.com/dylanvgils/dotfiles.git"
 dotfiles_dir="$HOME/dotfiles"
 dotfiles_examples_dir="$dotfiles_dir/docs/examples"
+dotfiles_brew_dir="$dotfiles_dir/brew"
 
 config_dir="$HOME/.config"
 
@@ -204,7 +205,13 @@ setup_brew_shellenv_darwin() {
 
 setup_packages_darwin() {
   log_info "Install using homebrew bundle"
-  brew bundle --file="$dotfiles_dir/Brewfile"
+  brew bundle --file="$dotfiles_brew_dir/Brewfile"
+
+  # Opt-in App Store apps, brew only passes HOMEBREW_* variables to the Brewfile
+  if [ -n "$DOTFILES_MAS_APPS" ]; then
+    log_info "\nInstall Mac App Store apps ($DOTFILES_MAS_APPS)"
+    HOMEBREW_DOTFILES_MAS_APPS="$DOTFILES_MAS_APPS" brew bundle --file="$dotfiles_brew_dir/Brewfile.mas"
+  fi
 }
 
 # Installs SDKMAN without touching the (stowed) shell rc files

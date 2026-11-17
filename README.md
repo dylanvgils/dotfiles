@@ -10,6 +10,18 @@ The easiest way to install the dotfiles is to use the install script, which can 
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/dylanvgils/dotfiles/main/install.sh)"
 ```
 
+On macOS, Mac App Store apps are opt-in by App Store ID, space-separated (find an ID with `mas search <app>` or in the app's App Store URL). To install them on the first run:
+
+```sh
+DOTFILES_MAS_APPS="<app-store-id>" bash -c "$(curl -fsSL https://raw.githubusercontent.com/dylanvgils/dotfiles/main/install.sh)"
+```
+
+To keep them on later `dotfiles update` runs, add the export to `~/.zshenv.local`:
+
+```sh
+export DOTFILES_MAS_APPS="<app-store-id>"
+```
+
 ## 1. Prerequisites
 
 Make sure the following packages are installed on the system:
@@ -30,7 +42,7 @@ sudo apt-get update && sudo apt-get install git zsh make stow
 sudo dnf install git zsh make stow
 
 # macOS (installs everything in the Brewfile, run from the repository root)
-brew bundle
+brew bundle --file=brew/Brewfile
 ```
 
 For installing `oh-my-zsh`, use the script listed on their [website](https://ohmyz.sh/#install).

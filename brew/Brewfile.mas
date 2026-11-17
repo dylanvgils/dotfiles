@@ -1,0 +1,7 @@
+# Mac App Store apps, opt-in by App Store ID via DOTFILES_MAS_APPS (see install.sh)
+ids = ENV.fetch("HOMEBREW_DOTFILES_MAS_APPS", "").split
+
+brew "mas" unless ids.empty?
+ids.each do |id|
+  mas "app-#{id}", id: id.to_i
+end
