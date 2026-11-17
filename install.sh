@@ -209,7 +209,7 @@ setup_packages_darwin() {
 
   # Opt-in App Store apps, brew only passes HOMEBREW_* variables to the Brewfile
   if [ -n "$DOTFILES_MAS_APPS" ]; then
-    log_info "\nInstall Mac App Store apps ($DOTFILES_MAS_APPS)"
+    log_info "\nInstall Mac App Store apps from DOTFILES_MAS_APPS"
     HOMEBREW_DOTFILES_MAS_APPS="$DOTFILES_MAS_APPS" brew bundle --file="$dotfiles_brew_dir/Brewfile.mas"
   fi
 }
