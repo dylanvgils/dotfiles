@@ -21,6 +21,9 @@
 # Allow ghostty config
 !**/.config/ghostty/
 
+# Allow ideavim config
+!**/.config/ideavim
+
 # Ignore vim except pack
 **/.vim/*
 **/.vim/*/

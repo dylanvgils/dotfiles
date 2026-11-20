@@ -1,0 +1,4 @@
+" Sync yanks/deletes with the system clipboard and enable IDE smart paste
+set clipboard+=unnamed
+set clipboard+=unnamedplus
+set clipboard+=ideaput

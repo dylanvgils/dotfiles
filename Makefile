@@ -1,7 +1,7 @@
 OS := $(shell uname -s)
 
 # Stow packages for every platform
-PACKAGES := tmux nvim zsh scripts
+PACKAGES := tmux nvim zsh scripts ideavim
 
 # macOS only
 ifeq ($(OS),Darwin)
