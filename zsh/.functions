@@ -40,6 +40,9 @@ isWinDir() {
 # Manage the dotfiles, a function so reload runs in the current shell
 dotfiles() {
   case "$1" in
+  stow)
+    make --directory="$HOME/dotfiles" all && dotfiles reload
+    ;;
   update)
     # Load the script into memory first, git pull may rewrite it while it runs
     DOTFILES_UPDATE=1 bash -c "$(cat "$HOME/dotfiles/install.sh")" && dotfiles reload
@@ -51,6 +54,7 @@ dotfiles() {
     echo "Usage: dotfiles <command>"
     echo
     echo "Commands:"
+    echo "  stow    Re-create the symlinks (e.g. for new files) and reload the shell"
     echo "  update  Re-run install.sh to pull the dotfiles and update packages and tools"
     echo "  reload  Reload .zshenv and .zshrc in the current shell"
     return 1

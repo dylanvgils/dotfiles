@@ -4,11 +4,13 @@ _dotfiles() {
   local -a commands
 
   commands=(
+    'stow:Re-create the symlinks (e.g. for new files) and reload the shell'
     'update:Re-run install.sh to pull the dotfiles and update packages and tools'
     'reload:Reload .zshenv and .zshrc in the current shell'
   )
 
-  _describe 'command' commands
+  # -V keeps the order above instead of sorting
+  _describe -V 'command' commands
 }
 
 _dotfiles "$@"

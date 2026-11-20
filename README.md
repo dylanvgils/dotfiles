@@ -93,6 +93,12 @@ The install script is idempotent, re-running it updates everything: the dotfiles
 dotfiles update
 ```
 
+After adding a new file to a package (e.g. a script in `scripts/.local/scripts/`), re-create the symlinks and reload the shell:
+
+```sh
+dotfiles stow
+```
+
 ## 2.4 Uninstall the dotfiles from the system
 
 The `Makefile` also contains a target to remove all the symlinks fro the home directory. To Uninstall the shell configuration execute the following commands:
@@ -201,7 +207,7 @@ The install script can be tested on Linux in a fresh Ubuntu container, this requ
 3. Check the `dotfiles` command and its completion:
 
    ```sh
-   dotfiles <tab>    # lists update and reload
+   dotfiles <tab>    # lists stow, update and reload
    dotfiles update   # all release binaries are "up to date", the shell reloads
    ```
 
