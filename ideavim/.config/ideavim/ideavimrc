@@ -1,4 +1,169 @@
+" =============================================================================
+"  .ideavimrc — core LazyVim-style keymaps for IntelliJ / JetBrains IDEs
+"  Start small: add a mapping whenever you press a key and miss it.
+"  Find action IDs: :action VimFindActionIdAction (then use the IDE menu)
+" =============================================================================
+
+let mapleader = " "
+
+" ---------------------------------------------------------------------------
+"  Options
+" ---------------------------------------------------------------------------
+set number
+set relativenumber
+set scrolloff=4
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
+set notimeout                  " which-key waits for the next key
+set ideajoin                   " smart J
+
 " Sync yanks/deletes with the system clipboard and enable IDE smart paste
 set clipboard+=unnamed
 set clipboard+=unnamedplus
 set clipboard+=ideaput
+
+" ---------------------------------------------------------------------------
+"  Plugins (which-key needs the "Which-Key" IDE plugin; rest is built in)
+" ---------------------------------------------------------------------------
+set commentary                 " gc / gcc
+set surround                   " ys / ds / cs
+set highlightedyank
+set which-key
+
+let g:WhichKey_DefaultDelay = 400
+
+" ---------------------------------------------------------------------------
+"  General editing
+" ---------------------------------------------------------------------------
+nnoremap <Esc> :nohlsearch<CR><Esc>
+nnoremap <leader>R :source ~/.config/ideavim/ideavimrc<CR>
+nnoremap <C-s> :w<CR>
+inoremap <C-s> <Esc>:w<CR>
+vnoremap < <gv
+vnoremap > >gv
+nmap <A-j> <Action>(MoveLineDown)
+nmap <A-k> <Action>(MoveLineUp)
+vmap <A-j> <Action>(MoveLineDown)
+vmap <A-k> <Action>(MoveLineUp)
+
+" ---------------------------------------------------------------------------
+"  Find / search
+" ---------------------------------------------------------------------------
+nmap <leader><leader> <Action>(GotoFile)
+nmap <leader>ff <Action>(GotoFile)
+nmap <leader>fr <Action>(RecentFiles)
+nmap <leader>,  <Action>(Switcher)
+nmap <leader>/  <Action>(FindInPath)
+nmap <leader>e  <Action>(ActivateProjectToolWindow)
+nmap <leader>ss <Action>(FileStructurePopup)
+nmap <leader>sS <Action>(GotoSymbol)
+nmap <leader>:  <Action>(GotoAction)
+
+" ---------------------------------------------------------------------------
+"  Code navigation
+" ---------------------------------------------------------------------------
+nmap gd <Action>(GotoDeclaration)
+nmap gr <Action>(ShowUsages)
+nmap gI <Action>(GotoImplementation)
+nmap gy <Action>(GotoTypeDeclaration)
+nmap K  <Action>(QuickJavaDoc)
+
+" ---------------------------------------------------------------------------
+"  Code actions
+" ---------------------------------------------------------------------------
+nmap <leader>ca <Action>(ShowIntentionActions)
+vmap <leader>ca <Action>(ShowIntentionActions)
+nmap <leader>cr <Action>(RenameElement)
+nmap <leader>cf <Action>(ReformatCode)
+vmap <leader>cf <Action>(ReformatCode)
+
+" ---------------------------------------------------------------------------
+"  Buffers (editor tabs) & windows
+" ---------------------------------------------------------------------------
+nmap <S-h> <Action>(PreviousTab)
+nmap <S-l> <Action>(NextTab)
+nnoremap <leader>bb <C-^>
+nnoremap <leader>` <C-^>
+nmap <C-o> <Action>(Back)
+nmap <C-i> <Action>(Forward)
+nmap <leader>bd <Action>(CloseContent)
+nmap <leader>bo <Action>(CloseAllEditorsButActive)
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+nmap <leader>-  <Action>(SplitHorizontally)
+nmap <leader>\| <Action>(SplitVertically)
+nmap <leader>wd <Action>(Unsplit)
+
+" ---------------------------------------------------------------------------
+"  Jumps: diagnostics & git hunks
+" ---------------------------------------------------------------------------
+nmap ]d <Action>(GotoNextError)
+nmap [d <Action>(GotoPreviousError)
+nmap ]h <Action>(VcsShowNextChangeMarker)
+nmap [h <Action>(VcsShowPrevChangeMarker)
+
+" ---------------------------------------------------------------------------
+"  Git & terminal
+" ---------------------------------------------------------------------------
+nmap <leader>gg <Action>(ActivateCommitToolWindow)
+nmap <leader>gb <Action>(Annotate)
+nmap <leader>ft <Action>(ActivateTerminalToolWindow)
+
+" ---------------------------------------------------------------------------
+"  Tests  (LazyVim test extra)
+"  RunClass/DebugClass run "context": the test method under the cursor,
+"  or the whole class/file when the cursor is outside a test method.
+" ---------------------------------------------------------------------------
+nmap <leader>tr <Action>(RunClass)
+nmap <leader>tt <Action>(RunClass)
+nmap <leader>td <Action>(DebugClass)
+nmap <leader>tl <Action>(Rerun)
+nmap <leader>tf <Action>(RerunFailedTests)
+nmap <leader>to <Action>(ActivateRunToolWindow)
+nmap <leader>tS <Action>(Stop)
+
+" ---------------------------------------------------------------------------
+"  Which-key labels
+" ---------------------------------------------------------------------------
+let g:WhichKeyDesc_reload      = "<leader>R Reload Config"
+let g:WhichKeyDesc_buffer      = "<leader>b +buffer"
+let g:WhichKeyDesc_code        = "<leader>c +code"
+let g:WhichKeyDesc_file        = "<leader>f +file/find"
+let g:WhichKeyDesc_git         = "<leader>g +git"
+let g:WhichKeyDesc_search      = "<leader>s +search"
+let g:WhichKeyDesc_windows     = "<leader>w +windows"
+let g:WhichKeyDesc_findfiles   = "<leader><leader> Find Files"
+let g:WhichKeyDesc_find_files  = "<leader>ff Find Files"
+let g:WhichKeyDesc_recent      = "<leader>fr Recent Files"
+let g:WhichKeyDesc_terminal    = "<leader>ft Terminal"
+let g:WhichKeyDesc_buffers     = "<leader>, Switch Buffer"
+let g:WhichKeyDesc_grep        = "<leader>/ Grep"
+let g:WhichKeyDesc_explorer    = "<leader>e Explorer"
+let g:WhichKeyDesc_actions     = "<leader>: Actions"
+let g:WhichKeyDesc_symbols     = "<leader>ss Symbols (file)"
+let g:WhichKeyDesc_symbols_ws  = "<leader>sS Symbols (project)"
+let g:WhichKeyDesc_code_action = "<leader>ca Code Action"
+let g:WhichKeyDesc_rename      = "<leader>cr Rename"
+let g:WhichKeyDesc_format      = "<leader>cf Format"
+let g:WhichKeyDesc_buf_other   = "<leader>bb Switch to Other Buffer"
+let g:WhichKeyDesc_buf_alt     = "<leader>` Switch to Other Buffer"
+let g:WhichKeyDesc_buf_delete  = "<leader>bd Delete Buffer"
+let g:WhichKeyDesc_buf_others  = "<leader>bo Delete Other Buffers"
+let g:WhichKeyDesc_split_below = "<leader>- Split Below"
+let g:WhichKeyDesc_split_right = "<leader>| Split Right"
+let g:WhichKeyDesc_win_close   = "<leader>wd Close Window"
+let g:WhichKeyDesc_lazygit     = "<leader>gg Git (commit window)"
+let g:WhichKeyDesc_blame       = "<leader>gb Blame"
+let g:WhichKeyDesc_test        = "<leader>t +test"
+let g:WhichKeyDesc_test_near   = "<leader>tr Run Nearest"
+let g:WhichKeyDesc_test_file   = "<leader>tt Run File/Context"
+let g:WhichKeyDesc_test_debug  = "<leader>td Debug Nearest"
+let g:WhichKeyDesc_test_last   = "<leader>tl Run Last"
+let g:WhichKeyDesc_test_failed = "<leader>tf Rerun Failed"
+let g:WhichKeyDesc_test_output = "<leader>to Show Output"
+let g:WhichKeyDesc_test_stop   = "<leader>tS Stop"
+
