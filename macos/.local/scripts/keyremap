@@ -47,7 +47,7 @@ apply() {
 
 # Usage: write_plist <name> <match> <mapping>
 # Runs hidutil directly, so only hidutil needs Input Monitoring. A real file,
-# launchd can skip symlinked plists. Re-applies every 60s for reconnects.
+# launchd can skip symlinked plists.
 write_plist() {
   mkdir -p "$agents_dir"
   rm -f "$agents_dir/$label_prefix.$1.plist"
@@ -69,8 +69,6 @@ write_plist() {
   </array>
   <key>RunAtLoad</key>
   <true/>
-  <key>StartInterval</key>
-  <integer>60</integer>
   <key>StandardErrorPath</key>
   <string>/tmp/$label_prefix.$1.err</string>
 </dict>

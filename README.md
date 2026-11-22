@@ -222,7 +222,7 @@ On macOS, the `macos` package remaps keys with the built-in `hidutil` (no Karabi
 - Built-in MacBook keyboard: the §/± key and the `/~ key are swapped.
 - Logitech keyboards (VendorID `0x46d`): the context menu key becomes right Option.
 
-`make all` (so also the install script and `dotfiles stow`) runs `keyremap load`. This installs a LaunchAgent per keyboard (`local.keyremap.builtin` and `local.keyremap.logitech`), which run `hidutil` at login and every 60 seconds (e.g. after a keyboard reconnects). `make delete` runs `keyremap unload`, which removes the LaunchAgents and resets the mappings.
+`make all` (so also the install script and `dotfiles stow`) runs `keyremap load`. This installs a LaunchAgent per keyboard (`local.keyremap.builtin` and `local.keyremap.logitech`), which run `hidutil` at login. `make delete` runs `keyremap unload`, which removes the LaunchAgents and resets the mappings.
 
 The LaunchAgents need two permissions for `hidutil`, set once after the first `make all`. Without them the mappings are not applied, or are set but have no effect:
 
