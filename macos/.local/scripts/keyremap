@@ -1,0 +1,134 @@
+#!/bin/sh
+# Remaps keys on macOS with hidutil, loaded at login by LaunchAgents:
+#   - Built-in keyboard: swaps the §/± key and the `/~ key
+#   - Logitech keyboard: context menu key -> right Option (menu_key_target)
+
+#
+# Variables
+#
+
+# Key the Logitech context menu key becomes, right Option (0x7000000E6).
+# Alternatives: right Command 0x7000000E7, Escape 0x700000029, F18 0x70000006D
+menu_key_target=0x7000000E6
+
+label_prefix="local.keyremap"
+agents_dir="$HOME/Library/LaunchAgents"
+hidutil=/usr/bin/hidutil
+builtin_match='{"Built-In":true}'
+logitech_match='{"VendorID":0x46d}'
+
+#
+# Functions
+#
+
+# Usage: map <src> <dst>, prints one mapping entry
+map() {
+  printf '{"HIDKeyboardModifierMappingSrc":%s,"HIDKeyboardModifierMappingDst":%s}' "$1" "$2"
+}
+
+# Built-in keyboard: §/± (0x64) <-> `/~ (0x35)
+builtin_mapping() {
+  echo "{\"UserKeyMapping\":[$(map 0x700000064 0x700000035),$(map 0x700000035 0x700000064)]}"
+}
+
+# Logitech keyboard: context menu (0x65) -> menu_key_target
+logitech_mapping() {
+  echo "{\"UserKeyMapping\":[$(map 0x700000065 "$menu_key_target")]}"
+}
+
+# Each --set replaces the whole mapping, so this is safe to repeat
+apply() {
+  "$hidutil" property --match "$builtin_match" --set "$(builtin_mapping)" >/dev/null
+  "$hidutil" property --match "$logitech_match" --set "$(logitech_mapping)" >/dev/null
+
+  # A missing keyboard is not an error
+  return 0
+}
+
+# Usage: write_plist <name> <match> <mapping>
+# Runs hidutil directly, so only hidutil needs Input Monitoring. A real file,
+# launchd can skip symlinked plists. Re-applies every 60s for reconnects.
+write_plist() {
+  mkdir -p "$agents_dir"
+  rm -f "$agents_dir/$label_prefix.$1.plist"
+  cat >"$agents_dir/$label_prefix.$1.plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>$label_prefix.$1</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>$hidutil</string>
+    <string>property</string>
+    <string>--match</string>
+    <string>$2</string>
+    <string>--set</string>
+    <string>$3</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StartInterval</key>
+  <integer>60</integer>
+  <key>StandardErrorPath</key>
+  <string>/tmp/$label_prefix.$1.err</string>
+</dict>
+</plist>
+PLIST
+}
+
+# Usage: load_agent <name> <match> <mapping>, installs and starts one LaunchAgent
+load_agent() {
+  launchctl bootout "gui/$(id -u)/$label_prefix.$1" 2>/dev/null
+  write_plist "$1" "$2" "$3"
+
+  # Bootstrap can fail with "5: Input/output error" while the bootout finishes
+  if ! launchctl bootstrap "gui/$(id -u)" "$agents_dir/$label_prefix.$1.plist" 2>/dev/null; then
+    sleep 1
+    launchctl bootstrap "gui/$(id -u)" "$agents_dir/$label_prefix.$1.plist" || return 1
+  fi
+  echo "Loaded $label_prefix.$1"
+}
+
+# Installs and starts one LaunchAgent per keyboard
+load() {
+  load_agent builtin "$builtin_match" "$(builtin_mapping)" || return 1
+  load_agent logitech "$logitech_match" "$(logitech_mapping)"
+}
+
+# Removes the LaunchAgents and resets the key mappings
+unload() {
+  for name in builtin logitech; do
+    launchctl bootout "gui/$(id -u)/$label_prefix.$name" 2>/dev/null
+    rm -f "$agents_dir/$label_prefix.$name.plist"
+  done
+
+  "$hidutil" property --match "$builtin_match" --set '{"UserKeyMapping":[]}' >/dev/null
+  "$hidutil" property --match "$logitech_match" --set '{"UserKeyMapping":[]}' >/dev/null
+  "$hidutil" property --set '{"UserKeyMapping":[]}' >/dev/null
+  echo "Unloaded the keyremap LaunchAgents and reset the key mappings"
+}
+
+#
+# Script
+#
+if [ "$(uname)" != "Darwin" ]; then
+  echo "keyremap is macOS only, skipping"
+  exit 0
+fi
+
+case "$1" in
+apply) apply ;;
+load) load ;;
+unload) unload ;;
+*)
+  echo "Usage: keyremap <command>"
+  echo
+  echo "Commands:"
+  echo "  apply   Apply the key mappings once"
+  echo "  load    Install and start the LaunchAgents that apply them"
+  echo "  unload  Remove the LaunchAgents and reset the key mappings"
+  exit 1
+  ;;
+esac

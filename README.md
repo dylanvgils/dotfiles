@@ -101,7 +101,7 @@ dotfiles stow
 
 ## 2.4 Uninstall the dotfiles from the system
 
-The `Makefile` also contains a target to remove all the symlinks fro the home directory. To Uninstall the shell configuration execute the following commands:
+The `Makefile` also contains a target to remove all the symlinks fro the home directory. On macOS it also removes the key remapping (see [macOS key remapping](#6-macos-key-remapping)). To Uninstall the shell configuration execute the following commands:
 
 > **NOTE:** The easiest way to make the changes affective is to logout an back in again. This will reload the entire shell configuration.
 
@@ -214,6 +214,48 @@ The install script can be tested on Linux in a fresh Ubuntu container, this requ
 4. Exit the shell to remove the container.
 
 > **NOTE:** The script pulls `main` from GitHub, which fails when an uncommitted change conflicts with it. The script continues with the local files in that case.
+
+## 6. macOS key remapping
+
+On macOS, the `macos` package remaps keys with the built-in `hidutil` (no Karabiner):
+
+- Built-in MacBook keyboard: the §/± key and the `/~ key are swapped.
+- Logitech keyboards (VendorID `0x46d`): the context menu key becomes right Option.
+
+`make all` (so also the install script and `dotfiles stow`) runs `keyremap load`. This installs a LaunchAgent per keyboard (`local.keyremap.builtin` and `local.keyremap.logitech`), which run `hidutil` at login and every 60 seconds (e.g. after a keyboard reconnects). `make delete` runs `keyremap unload`, which removes the LaunchAgents and resets the mappings.
+
+The LaunchAgents need two permissions for `hidutil`, set once after the first `make all`. Without them the mappings are not applied, or are set but have no effect:
+
+1. Background item: macOS shows a notification that `hidutil` can run in the background. Make sure it's enabled in System Settings > General > Login Items & Extensions.
+2. Input Monitoring: open System Settings > Privacy & Security > Input Monitoring, click **+**, press Cmd+Shift+G, type `/usr/bin/hidutil` and click **Open**. Make sure `hidutil` is switched on.
+3. Restart.
+
+To change a mapping:
+
+1. Edit `menu_key_target` or the key codes in [`macos/.local/scripts/keyremap`](macos/.local/scripts/keyremap) ([key code list](https://developer.apple.com/library/archive/technotes/tn2450/_index.html)).
+2. Rewrite the LaunchAgents with the new mapping and apply it:
+
+   ```sh
+   keyremap load
+   ```
+
+To debug:
+
+```sh
+# Connected keyboards with their VendorID and ProductID
+hidutil list
+
+# Active mappings, per keyboard
+hidutil property --match '{"Built-In":true}' --get UserKeyMapping | head -20
+hidutil property --match '{"VendorID":0x46d}' --get UserKeyMapping
+
+# LaunchAgent state and errors
+launchctl print gui/$(id -u)/local.keyremap.builtin
+launchctl print gui/$(id -u)/local.keyremap.logitech
+cat /tmp/local.keyremap.*.err
+```
+
+> **NOTE:** If the context menu key still does nothing, the keyboard may handle the key in firmware and never send `0x65`.
 
 ## Known issues
 

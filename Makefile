@@ -1,18 +1,23 @@
 OS := $(shell uname -s)
 
 # Stow packages for every platform
-PACKAGES := tmux nvim zsh scripts ideavim
+PACKAGES := tmux nvim zsh ideavim
 
 # macOS only
 ifeq ($(OS),Darwin)
-PACKAGES += ghostty
+PACKAGES += ghostty macos
 endif
 
 # All recreates all dotfile symlinks to the home directory
+# Scripts is not folded, other packages (macos) add files to ~/.local/scripts
 all:
 	stow --target=$$HOME --restow --no-folding ssh
 	chmod 700 $$HOME/.ssh
+	stow --target=$$HOME --restow --no-folding scripts
 	stow --target=$$HOME --restow $(PACKAGES)
+ifeq ($(OS),Darwin)
+	sh macos/.local/scripts/keyremap load
+endif
 
 # Init initializes the submodules and (re)creates the symlinks in the home directory
 init: submodule.init all
@@ -30,6 +35,9 @@ submodule.update:
 
 # Delete removes all the symlinks from the home directory
 delete:
+ifeq ($(OS),Darwin)
+	sh macos/.local/scripts/keyremap unload
+endif
 	stow --target=$$HOME --delete */
 
 # Pull pulls the latest refs from the remote repository
