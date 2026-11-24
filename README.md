@@ -217,45 +217,30 @@ The install script can be tested on Linux in a fresh Ubuntu container, this requ
 
 ## 6. macOS key remapping
 
-On macOS, the `macos` package remaps keys with the built-in `hidutil` (no Karabiner):
+The `macos` package remaps keys with `hidutil`, applied at login by LaunchAgents (`make all` installs them, `make delete` removes them):
 
-- Built-in MacBook keyboard: the §/± key and the `/~ key are swapped.
-- Logitech keyboards (VendorID `0x46d`): the context menu key becomes right Option.
+- Built-in keyboard: §/± and `/~ are swapped.
+- Logitech keyboards: the context menu key becomes right Option.
 
-`make all` (so also the install script and `dotfiles stow`) runs `keyremap load`. This installs a LaunchAgent per keyboard (`local.keyremap.builtin` and `local.keyremap.logitech`), which run `hidutil` at login. `make delete` runs `keyremap unload`, which removes the LaunchAgents and resets the mappings.
+Set up once after the first `make all`:
 
-The LaunchAgents need two permissions for `hidutil`, set once after the first `make all`. Without them the mappings are not applied, or are set but have no effect:
+1. Allow `hidutil` in System Settings > General > Login Items & Extensions.
+2. For the built-in keyboard, add `/usr/bin/hidutil` to System Settings > Privacy & Security > Input Monitoring (**+**, then Cmd+Shift+G). Without it the mapping is set but has no effect.
 
-1. Background item: macOS shows a notification that `hidutil` can run in the background. Make sure it's enabled in System Settings > General > Login Items & Extensions.
-2. Input Monitoring: open System Settings > Privacy & Security > Input Monitoring, click **+**, press Cmd+Shift+G, type `/usr/bin/hidutil` and click **Open**. Make sure `hidutil` is switched on.
-3. Restart.
+To change a mapping, edit [`keyremap`](macos/.local/scripts/keyremap) ([key codes](https://developer.apple.com/library/archive/technotes/tn2450/_index.html)) and run `keyremap load`. See [keyremap.md](docs/keyremap.md) to debug.
 
-To change a mapping:
+## 7. Raycast script commands
 
-1. Edit `menu_key_target` or the key codes in [`macos/.local/scripts/keyremap`](macos/.local/scripts/keyremap) ([key code list](https://developer.apple.com/library/archive/technotes/tn2450/_index.html)).
-2. Rewrite the LaunchAgents with the new mapping and apply it:
-
-   ```sh
-   keyremap load
-   ```
-
-To debug:
+[`raycast/scripts`](raycast/scripts) holds Raycast script commands, such as **Toggle Caps Lock**. On macOS, `make all` compiles their Swift sources in `raycast/src` to `raycast/bin` (untracked). This needs `swiftc` from the Xcode Command Line Tools:
 
 ```sh
-# Connected keyboards with their VendorID and ProductID
-hidutil list
-
-# Active mappings, per keyboard
-hidutil property --match '{"Built-In":true}' --get UserKeyMapping | head -20
-hidutil property --match '{"VendorID":0x46d}' --get UserKeyMapping
-
-# LaunchAgent state and errors
-launchctl print gui/$(id -u)/local.keyremap.builtin
-launchctl print gui/$(id -u)/local.keyremap.logitech
-cat /tmp/local.keyremap.*.err
+xcode-select --install
 ```
 
-> **NOTE:** If the context menu key still does nothing, the keyboard may handle the key in firmware and never send `0x65`.
+Set up once after the first `make all`:
+
+1. Open Raycast Settings > Extensions > Script Commands.
+2. Click **Add Directories** and select `~/dotfiles/raycast/scripts`.
 
 ## Known issues
 

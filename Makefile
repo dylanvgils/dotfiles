@@ -8,6 +8,9 @@ ifeq ($(OS),Darwin)
 PACKAGES += ghostty macos
 endif
 
+# Raycast script command binary (macOS)
+CAPS_LOCK_BIN := raycast/bin/toggle-caps-lock
+
 # All recreates all dotfile symlinks to the home directory
 # Scripts is not folded, other packages (macos) add files to ~/.local/scripts
 all:
@@ -17,7 +20,17 @@ all:
 	stow --target=$$HOME --restow $(PACKAGES)
 ifeq ($(OS),Darwin)
 	sh macos/.local/scripts/keyremap load
+	@if command -v swiftc >/dev/null; then \
+		$(MAKE) $(CAPS_LOCK_BIN); \
+	else \
+		echo "swiftc not found, skipping Raycast binaries (run xcode-select --install)"; \
+	fi
 endif
+
+# Raycast toggle Caps Lock binary, only rebuilt when the source changes
+$(CAPS_LOCK_BIN): raycast/src/toggle-caps-lock.swift
+	mkdir -p $(@D)
+	swiftc -O -o $@ $<
 
 # Init initializes the submodules and (re)creates the symlinks in the home directory
 init: submodule.init all
