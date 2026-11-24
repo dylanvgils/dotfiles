@@ -13,15 +13,27 @@ homebrew_install_script="https://raw.githubusercontent.com/Homebrew/install/HEAD
 omzsh_install_script="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
 sdkman_install_script="https://get.sdkman.io?rcupdate=false"
 
+# Linux release binaries, the architecture names the release assets use
+case "$(uname -m)" in
+x86_64)
+  release_arch="x86_64"
+  cosign_arch="amd64"
+  ;;
+aarch64 | arm64)
+  release_arch="arm64"
+  cosign_arch="arm64"
+  ;;
+esac
+
 # Linux release binaries, GitHub repo and asset name (%s is the version)
 bin_dir="/usr/local/bin"
 lazygit_repo="jesseduffield/lazygit"
-lazygit_asset="lazygit_%s_linux_x86_64.tar.gz"
+lazygit_asset="lazygit_%s_linux_${release_arch}.tar.gz"
 nvim_repo="neovim/neovim"
-nvim_asset="nvim-linux-x86_64.tar.gz"
+nvim_asset="nvim-linux-${release_arch}.tar.gz"
 nvim_install_dir="/opt/nvim"
 cosign_repo="sigstore/cosign"
-cosign_asset="cosign-linux-amd64"
+cosign_asset="cosign-linux-${cosign_arch}"
 
 #
 # Functions
@@ -386,7 +398,9 @@ log_info "Soruce configuration files using included Makefile"
 make init
 
 # Install lazygit, neovim and cosign (darwin has them in the Brewfile)
-if [ "$platform" = "linux" ]; then
+if [ "$platform" = "linux" ] && [ -z "$release_arch" ]; then
+  log_info "Architecture $(uname -m) not supported, skipping lazygit, neovim and cosign"
+elif [ "$platform" = "linux" ]; then
   log_header "Install lazygit"
   install_lazygit_linux
 

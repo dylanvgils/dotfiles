@@ -1,18 +1,34 @@
 OS := $(shell uname -s)
 
 # Stow packages for every platform
-PACKAGES := tmux nvim zsh scripts ideavim
+PACKAGES := tmux nvim zsh ideavim
 
 # macOS only
 ifeq ($(OS),Darwin)
-PACKAGES += ghostty
+PACKAGES += ghostty macos
+
+# Raycast script command binaries, skipped without the Xcode Command Line Tools
+XCODE_TOOLS := $(shell xcode-select --print-path 2>/dev/null)
+RAYCAST_BINS := $(if $(XCODE_TOOLS), \
+	raycast/bin/toggle-caps-lock \
+)
+
+MACOS_ALL := keyremap.load $(RAYCAST_BINS)
+MACOS_DELETE := keyremap.unload
 endif
 
 # All recreates all dotfile symlinks to the home directory
-all:
+# Scripts is not folded, other packages (macos) add files to ~/.local/scripts
+all: $(MACOS_ALL)
 	stow --target=$$HOME --restow --no-folding ssh
 	chmod 700 $$HOME/.ssh
+	stow --target=$$HOME --restow --no-folding scripts
 	stow --target=$$HOME --restow $(PACKAGES)
+
+# Raycast binaries are only rebuilt when their source changes
+raycast/bin/%: raycast/src/%.swift
+	mkdir -p $(@D)
+	swiftc -O -o $@ $<
 
 # Init initializes the submodules and (re)creates the symlinks in the home directory
 init: submodule.init all
@@ -29,8 +45,16 @@ submodule.update:
 	git submodule update --recursive --remote
 
 # Delete removes all the symlinks from the home directory
-delete:
+delete: $(MACOS_DELETE)
 	stow --target=$$HOME --delete */
+
+# Keyremap.load installs the LaunchAgents that remap keys
+keyremap.load:
+	sh macos/.local/scripts/keyremap load
+
+# Keyremap.unload removes them and resets the key mappings
+keyremap.unload:
+	sh macos/.local/scripts/keyremap unload
 
 # Pull pulls the latest refs from the remote repository
 pull:

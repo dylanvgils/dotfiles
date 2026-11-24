@@ -49,3 +49,6 @@ ehthumbs.db
 # Only track the ssh config
 **/.ssh/*
 !**/.ssh/config
+
+# Raycast binaries, built by make all
+raycast/bin/

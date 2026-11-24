@@ -101,7 +101,7 @@ dotfiles stow
 
 ## 2.4 Uninstall the dotfiles from the system
 
-The `Makefile` also contains a target to remove all the symlinks fro the home directory. To Uninstall the shell configuration execute the following commands:
+The `Makefile` also contains a target to remove all the symlinks fro the home directory. On macOS it also removes the key remapping (see [macOS key remapping](#6-macos-key-remapping)). To Uninstall the shell configuration execute the following commands:
 
 > **NOTE:** The easiest way to make the changes affective is to logout an back in again. This will reload the entire shell configuration.
 
@@ -214,6 +214,33 @@ The install script can be tested on Linux in a fresh Ubuntu container, this requ
 4. Exit the shell to remove the container.
 
 > **NOTE:** The script pulls `main` from GitHub, which fails when an uncommitted change conflicts with it. The script continues with the local files in that case.
+
+## 6. macOS key remapping
+
+The `macos` package remaps keys with `hidutil`, applied at login by LaunchAgents (`make all` installs them, `make delete` removes them):
+
+- Built-in keyboard: §/± and `/~ are swapped.
+- Logitech keyboards: the context menu key becomes right Option.
+
+Set up once after the first `make all`:
+
+1. Allow `hidutil` in System Settings > General > Login Items & Extensions.
+2. For the built-in keyboard, add `/usr/bin/hidutil` to System Settings > Privacy & Security > Input Monitoring (**+**, then Cmd+Shift+G). Without it the mapping is set but has no effect.
+
+To change a mapping, edit [`keyremap`](macos/.local/scripts/keyremap) ([key codes](https://developer.apple.com/library/archive/technotes/tn2450/_index.html)) and run `keyremap load`. See [keyremap.md](docs/keyremap.md) to debug.
+
+## 7. Raycast script commands
+
+[`raycast/scripts`](raycast/scripts) holds Raycast script commands, such as **Toggle Caps Lock**. On macOS, `make all` compiles their Swift sources in `raycast/src` to `raycast/bin` (untracked). This needs `swiftc` from the Xcode Command Line Tools:
+
+```sh
+xcode-select --install
+```
+
+Set up once after the first `make all`:
+
+1. Open Raycast Settings > Extensions > Script Commands.
+2. Click **Add Directories** and select `~/dotfiles/raycast/scripts`.
 
 ## Known issues
 
