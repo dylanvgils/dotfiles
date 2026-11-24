@@ -6,29 +6,27 @@ PACKAGES := tmux nvim zsh ideavim
 # macOS only
 ifeq ($(OS),Darwin)
 PACKAGES += ghostty macos
-endif
 
-# Raycast script command binary (macOS)
-CAPS_LOCK_BIN := raycast/bin/toggle-caps-lock
+# Raycast script command binaries, skipped without the Xcode Command Line Tools
+XCODE_TOOLS := $(shell xcode-select --print-path 2>/dev/null)
+RAYCAST_BINS := $(if $(XCODE_TOOLS), \
+	raycast/bin/toggle-caps-lock \
+)
+
+MACOS_ALL := keyremap.load $(RAYCAST_BINS)
+MACOS_DELETE := keyremap.unload
+endif
 
 # All recreates all dotfile symlinks to the home directory
 # Scripts is not folded, other packages (macos) add files to ~/.local/scripts
-all:
+all: $(MACOS_ALL)
 	stow --target=$$HOME --restow --no-folding ssh
 	chmod 700 $$HOME/.ssh
 	stow --target=$$HOME --restow --no-folding scripts
 	stow --target=$$HOME --restow $(PACKAGES)
-ifeq ($(OS),Darwin)
-	sh macos/.local/scripts/keyremap load
-	@if command -v swiftc >/dev/null; then \
-		$(MAKE) $(CAPS_LOCK_BIN); \
-	else \
-		echo "swiftc not found, skipping Raycast binaries (run xcode-select --install)"; \
-	fi
-endif
 
-# Raycast toggle Caps Lock binary, only rebuilt when the source changes
-$(CAPS_LOCK_BIN): raycast/src/toggle-caps-lock.swift
+# Raycast binaries are only rebuilt when their source changes
+raycast/bin/%: raycast/src/%.swift
 	mkdir -p $(@D)
 	swiftc -O -o $@ $<
 
@@ -47,11 +45,16 @@ submodule.update:
 	git submodule update --recursive --remote
 
 # Delete removes all the symlinks from the home directory
-delete:
-ifeq ($(OS),Darwin)
-	sh macos/.local/scripts/keyremap unload
-endif
+delete: $(MACOS_DELETE)
 	stow --target=$$HOME --delete */
+
+# Keyremap.load installs the LaunchAgents that remap keys
+keyremap.load:
+	sh macos/.local/scripts/keyremap load
+
+# Keyremap.unload removes them and resets the key mappings
+keyremap.unload:
+	sh macos/.local/scripts/keyremap unload
 
 # Pull pulls the latest refs from the remote repository
 pull:
